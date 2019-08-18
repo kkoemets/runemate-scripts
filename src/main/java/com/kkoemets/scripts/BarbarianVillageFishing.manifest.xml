@@ -1,0 +1,26 @@
+<manifest>
+    <main-class>com.kkoemets.scripts.BarbarianVillageFishing</main-class>
+    <name>Barbarian Village Power-fishing</name>
+    <tag-line>Test bot</tag-line><!--Max of 50 chars-->
+    <description>Test</description><!--Max of 110 chars-->
+    <version>1.0.2</version>
+    <compatibility>
+        <game>OSRS</game>
+    </compatibility>
+    <categories>
+        <category>FISHING</category>
+    </categories>
+    <!--Required to publish on the bot store-->
+    <internal-id>Test</internal-id>
+    <!--The rest are optional-->
+    <open-source>true</open-source>
+    <hidden>false</hidden> <!--If you need to hide it from the bot store for maintenance-->
+    <access>public</access>
+    <tags>
+        <tag>Tree</tag>
+        <tag>Vine</tag>
+    </tags>
+<!--    <resources>-->
+<!--        <resource>path/to/file.png</resource>-->
+<!--    </resources>-->
+</manifest>
