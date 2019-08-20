@@ -1,4 +1,4 @@
-package com.kkoemets.api.npc;
+package com.kkoemets.api.common.npc;
 
 import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;

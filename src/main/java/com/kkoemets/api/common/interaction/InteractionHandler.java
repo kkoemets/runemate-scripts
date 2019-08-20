@@ -1,11 +1,11 @@
-package com.kkoemets.api.interaction;
+package com.kkoemets.api.common.interaction;
 
 import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
-import static com.kkoemets.api.camera.MouseWheel.mouseWheelTurnTo;
-import static com.kkoemets.api.interaction.execution.CMouse.accurateInteract;
+import static com.kkoemets.api.common.camera.MouseWheel.mouseWheelTurnTo;
+import static com.kkoemets.api.common.interaction.execution.CMouse.accurateInteract;
 import static com.kkoemets.playersense.CustomPlayerSense.Key.REACTION_TIME;
 import static com.runemate.game.api.script.Execution.delay;
 

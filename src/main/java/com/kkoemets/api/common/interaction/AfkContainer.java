@@ -1,6 +1,5 @@
-package com.kkoemets.api.interaction;
+package com.kkoemets.api.common.interaction;
 
-import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import static com.kkoemets.playersense.CustomPlayerSense.Key.AFK_MEDIUM_TIME;
@@ -13,7 +12,7 @@ public class AfkContainer {
         this.log = log;
     }
 
-    public  Long getMediumAfkTime() {
+    public Long getMediumAfkTime() {
         return AFK_MEDIUM_TIME.getAsLong() + nextLong(-10000, 10000);
     }
 }

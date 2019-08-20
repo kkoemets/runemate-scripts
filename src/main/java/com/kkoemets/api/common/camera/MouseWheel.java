@@ -1,4 +1,4 @@
-package com.kkoemets.api.camera;
+package com.kkoemets.api.common.camera;
 
 import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.input.Mouse;

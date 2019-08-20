@@ -1,4 +1,4 @@
-package com.kkoemets.api.player;
+package com.kkoemets.api.common.player;
 
 import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.script.framework.logger.BotLogger;

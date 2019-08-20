@@ -1,4 +1,4 @@
-package com.kkoemets.api.interaction.execution;
+package com.kkoemets.api.common.interaction.execution;
 
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
@@ -20,13 +20,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 public class CMouse {
-
-    enum Direction {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST
-    }
 
     public static boolean accurateInteract(GameObject gameObject, String action) {
         if (gameObject == null) {
@@ -150,10 +143,18 @@ public class CMouse {
         InteractablePoint point = new InteractablePoint(Mouse.getPosition());
 
         switch (direction) {
-            case NORTH: point = new InteractablePoint(0, 0); break;
-            case EAST: point = new InteractablePoint(0, 0); break;
-            case SOUTH: point = new InteractablePoint(0, 0); break;
-            case WEST: point = new InteractablePoint(0, 0); break;
+            case NORTH:
+                point = new InteractablePoint(0, 0);
+                break;
+            case EAST:
+                point = new InteractablePoint(0, 0);
+                break;
+            case SOUTH:
+                point = new InteractablePoint(0, 0);
+                break;
+            case WEST:
+                point = new InteractablePoint(0, 0);
+                break;
         }
 
         concurrentlyMove(point);
@@ -221,6 +222,13 @@ public class CMouse {
         }
 
         return CExecution.delayUntil(() -> CMouse.fastInteract(locatableEntity, option), Random.nextInt(900, 1300), 5000, 6000);
+    }
+
+    enum Direction {
+        NORTH,
+        EAST,
+        SOUTH,
+        WEST
     }
 
 }

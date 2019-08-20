@@ -1,4 +1,4 @@
-package com.kkoemets.api.interaction.execution;
+package com.kkoemets.api.common.interaction.execution;
 
 import com.runemate.game.api.hybrid.util.StopWatch;
 import com.runemate.game.api.hybrid.util.calculations.Random;

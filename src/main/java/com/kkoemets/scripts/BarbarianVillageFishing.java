@@ -1,10 +1,10 @@
 package com.kkoemets.scripts;
 
-import com.kkoemets.api.interaction.AfkContainer;
-import com.kkoemets.api.interaction.InteractionHandler;
-import com.kkoemets.api.inventory.InventoryHandler;
-import com.kkoemets.api.npc.NpcHandler;
-import com.kkoemets.api.player.PlayerHandler;
+import com.kkoemets.api.common.interaction.AfkContainer;
+import com.kkoemets.api.common.interaction.InteractionHandler;
+import com.kkoemets.api.common.inventory.InventoryHandler;
+import com.kkoemets.api.common.npc.NpcHandler;
+import com.kkoemets.api.common.player.PlayerHandler;
 import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.local.Camera;

@@ -1,4 +1,4 @@
-package com.kkoemets.api.inventory;
+package com.kkoemets.api.common.inventory;
 
 import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
