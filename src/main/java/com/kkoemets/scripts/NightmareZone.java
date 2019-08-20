@@ -245,7 +245,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
 
     private void guzzleRockCake() throws IllegalStateException {
         getDwarvenRockCake().get(0).interact("Guzzle");
-        delay(Random.nextInt(190, 330));
+        delay(Random.nextInt(190, 330) / 3);
     }
 
     private SpriteItemQueryResults getDwarvenRockCake() {
