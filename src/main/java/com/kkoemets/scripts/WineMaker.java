@@ -65,7 +65,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
         if (Players.getLocal().getAnimationId() != -1) {
             log.info("Player is making wine");
-        } else if (!Bank.isOpen() && delay(845)) {
+        } else if (delay(845) &&!Bank.isOpen()) {
             if (isPlayerIdle()) {
                 if (hasPlayerJugsAndGrapesInInventory()) {
                     makeWine();
