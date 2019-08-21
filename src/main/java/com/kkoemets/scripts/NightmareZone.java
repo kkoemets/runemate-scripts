@@ -146,7 +146,8 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
                         absorptionPointsThreshold.getThreshold());
                 drinkAbsorptionPotionsUntilFull();
                 absorptionPointsThreshold.nextThreshold();
-                log.info("New absorption potion t");
+                log.info("New absorption potion threshold: " +
+                        absorptionPointsThreshold.getThreshold());
             }
         }
     }
