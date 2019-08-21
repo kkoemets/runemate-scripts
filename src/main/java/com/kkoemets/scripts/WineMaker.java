@@ -61,6 +61,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
     public void onLoop() {
         if (!Optional.ofNullable(Players.getLocal()).isPresent()) {
             log.info("Player is not found, waiting...");
+            return;
         }
 
         if (Players.getLocal().getAnimationId() != -1) {
