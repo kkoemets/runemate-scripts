@@ -2,9 +2,10 @@ package com.kkoemets.scripts;
 
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.input.Keyboard;
-import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
-import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
-import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
+import com.runemate.game.api.hybrid.local.hud.interfaces.*;
+import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceComponent.Type;
+import com.runemate.game.api.hybrid.queries.InterfaceComponentQueryBuilder;
+import com.runemate.game.api.hybrid.queries.results.InterfaceComponentQueryResults;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
 import com.runemate.game.api.hybrid.region.Banks;
@@ -21,6 +22,7 @@ import static com.kkoemets.playersense.CustomPlayerSense.Key.ACTIVENESS_FACTOR_W
 import static com.kkoemets.playersense.CustomPlayerSense.Key.REACTION_TIME;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.*;
+import static com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceComponent.Type.*;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
 import static com.runemate.game.api.hybrid.util.calculations.Random.nextLong;
 import static com.runemate.game.api.script.Execution.delay;
@@ -155,12 +157,18 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
     private void makeWine() {
         log.info("Starting to make wine");
-        getLastJugOfWaterInInventory().get().click();
-        delay(REACTION_TIME.getAsLong() * 2 + nextLong(-10, 67));
-        getFirstGrapesInInvetory().get().click();
-        delay(REACTION_TIME.getAsLong() * 2 + nextLong(0, 67));
+        if (Interfaces.newQuery().names("Unfermented wine").results().isEmpty()) {
+            getLastJugOfWaterInInventory().get().click();
+            delay(REACTION_TIME.getAsLong() * 2 + nextLong(-10, 67));
+            getFirstGrapesInInvetory().get().click();
+            delay(REACTION_TIME.getAsLong() * 2 + nextLong(0, 67));
+        }
+
         delay(Random.nextLong(123, 235));
-        Keyboard.pressKey(32); // space
+
+        if (!Interfaces.newQuery().names("Unfermented wine").results().isEmpty()) {
+            Keyboard.pressKey(32); // space
+        }
     }
 
     private Optional<SpriteItem> getLastJugOfWaterInInventory() {
