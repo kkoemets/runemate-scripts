@@ -77,7 +77,7 @@ public class BarbarianVillageFishing extends LoopingBot implements MoneyPouchLis
             }
             dropFish();
         } else if (isPlayerAbleToLureFish(rodFishingSpot, player)) {
-            interactionHandler.turnCameraIfNecessaryAndInterract(rodFishingSpot.get(), player.get(),
+            interactionHandler.turnCameraIfNecessaryAndInteract(rodFishingSpot.get(), player.get(),
                     "Lure");
             delay(4500);
         }

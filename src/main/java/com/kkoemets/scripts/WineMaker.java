@@ -1,10 +1,9 @@
 package com.kkoemets.scripts;
 
+import com.kkoemets.api.common.interaction.InteractionHandler;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.input.Keyboard;
 import com.runemate.game.api.hybrid.local.hud.interfaces.*;
-import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceComponent.Type;
-import com.runemate.game.api.hybrid.queries.InterfaceComponentQueryBuilder;
 import com.runemate.game.api.hybrid.queries.results.InterfaceComponentQueryResults;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
@@ -21,8 +20,8 @@ import java.util.Optional;
 import static com.kkoemets.playersense.CustomPlayerSense.Key.ACTIVENESS_FACTOR_WHILE_WAITING;
 import static com.kkoemets.playersense.CustomPlayerSense.Key.REACTION_TIME;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
+import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.DefaultQuantity.X;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.*;
-import static com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceComponent.Type.*;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
 import static com.runemate.game.api.hybrid.util.calculations.Random.nextLong;
 import static com.runemate.game.api.script.Execution.delay;
@@ -35,6 +34,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
     private final String GRAPES = "Grapes";
     private String aSetting;
     private BotLogger log;
+    private InteractionHandler interactionHandler;
 
 
     // Required to tell the client that the bot is EmbeddableUI compatible. Remember, that a bot's main class must have a public no-args constructor, which every Object has by default.
@@ -51,7 +51,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         // Load script configuration
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
-//        setZoom(0.027, 0.004);
+        interactionHandler = new InteractionHandler(log);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
         if (Players.getLocal().getAnimationId() != -1) {
             log.info("Player is making wine");
-        } else if (delay(845) &&!Bank.isOpen()) {
+        } else if (delay(845) && !Bank.isOpen()) {
             if (isPlayerIdle()) {
                 if (hasPlayerJugsAndGrapesInInventory()) {
                     makeWine();
@@ -79,15 +79,19 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
                 }
             }
         } else {
-            depositInventoryIfNeeded();
-
-            setupDefaultQuantityIfNeeded();
-
-            withdrawJugsAndGrapes();
-
-            Bank.close();
+            depositInventoryAndGetWineMaterials();
         }
         log.debug("End of main loop");
+    }
+
+    private void depositInventoryAndGetWineMaterials() {
+        depositInventoryIfNeeded();
+
+        setupDefaultQuantityIfNeeded();
+
+        withdrawJugsAndGrapes();
+
+        Bank.close();
     }
 
     private boolean isPlayerIdle() {
@@ -121,9 +125,11 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
             delay(bankSpecificReactionTime());
         }
 
-        if (getDefaultQuantity() != DefaultQuantity.X) {
+        delay(bankSpecificReactionTime());
+
+        if (getDefaultQuantity() != X) {
             log.info("Default quantity is not X, setting to X");
-            setDefaultQuantity(DefaultQuantity.X);
+            setDefaultQuantity(X);
             delay(bankSpecificReactionTime());
         }
     }
@@ -152,23 +158,34 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
     private void openBank() {
         log.info("Opening bank");
+        if (!getNearestBankBooth().get().isVisible()) {
+            interactionHandler.turnCameraToCoordinate(getNearestBankBooth().get().getPosition(),
+                    Players.getLocal());
+        }
         getNearestBankBooth().get().click();
     }
 
     private void makeWine() {
         log.info("Starting to make wine");
-        if (Interfaces.newQuery().names("Unfermented wine").results().isEmpty()) {
+        if (getWineMakingInterface().isEmpty()) {
+            log.info("Clicking on jug of water");
             getLastJugOfWaterInInventory().get().click();
-            delay(REACTION_TIME.getAsLong() * 2 + nextLong(-10, 67));
+            delay(REACTION_TIME.getAsLong() * 4 + nextLong(-121, 231));
+            log.info("Clicking on grapes");
             getFirstGrapesInInvetory().get().click();
             delay(REACTION_TIME.getAsLong() * 2 + nextLong(0, 67));
         }
 
         delay(Random.nextLong(123, 235));
 
-        if (!Interfaces.newQuery().names("Unfermented wine").results().isEmpty()) {
+        if (!getWineMakingInterface().isEmpty()) {
+            log.info("Pressing space to make wine");
             Keyboard.pressKey(32); // space
         }
+    }
+
+    private InterfaceComponentQueryResults getWineMakingInterface() {
+        return Interfaces.newQuery().names("Unfermented wine").results();
     }
 
     private Optional<SpriteItem> getLastJugOfWaterInInventory() {

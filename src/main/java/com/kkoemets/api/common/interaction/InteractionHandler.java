@@ -2,6 +2,7 @@ package com.kkoemets.api.common.interaction;
 
 import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.Player;
+import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import static com.kkoemets.api.common.camera.MouseWheel.mouseWheelTurnTo;
@@ -16,11 +17,14 @@ public class InteractionHandler {
         this.log = log;
     }
 
-    public void turnCameraIfNecessaryAndInterract(Npc npc, Player player, String action) {
+    public void turnCameraIfNecessaryAndInteract(Npc npc, Player player, String action) {
         if (!npc.isVisible()) {
             mouseWheelTurnTo(npc.getPosition(), player);
         }
         delay(REACTION_TIME.getAsInteger());
         accurateInteract(npc, action);
+    }
+    public void turnCameraToCoordinate(Coordinate coordinate, Player player) {
+            mouseWheelTurnTo(coordinate, player);
     }
 }
