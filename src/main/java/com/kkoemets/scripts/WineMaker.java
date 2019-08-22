@@ -50,7 +50,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         // Submit your MoneyPouchListener
         getEventDispatcher().addListener(this);
         // Sets the length of time in milliseconds to wait before calling onLoop again
-        setLoopDelay((int) (ACTIVENESS_FACTOR_WHILE_WAITING.getAsDouble() * 10000));
+        setLoopDelay((Random.nextInt(456, 1342)));
         // Load script configuration
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
@@ -71,14 +71,13 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
         if (Players.getLocal().getAnimationId() != -1) {
             log.info("Player is making wine");
-        } else if (delay(845) && !Bank.isOpen()) {
+        } else if (!Bank.isOpen()) {
             if (isPlayerIdle()) {
                 if (getItems(GRAPES).size() == halfOfInventory
                         && getItems(JUG_OF_WATER).size() == halfOfInventory) {
                     makeWine();
                 } else {
                     clickOnBankBoothToOpenBank();
-                    delay(nextLong(523, 1121));
                 }
             }
         } else {
@@ -106,6 +105,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
     private void clickOnBankBoothToOpenBank() {
         if (getNearestBankBooth().isPresent()) {
             openBank();
+            delay(658, 878);
         } else {
             throw new IllegalStateException("Could not find a bank booth!");
         }
@@ -133,7 +133,6 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
         log.info("Depositing inventory to bank");
         depositInventory();
-        delay(bankSpecificReactionTime());
     }
 
     private void setupDefaultQuantityIfNeeded() {
@@ -208,11 +207,13 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
                 getItems().get(13).click();
             }
 
-            delay(REACTION_TIME.getAsLong() * 4 + nextLong(-121, 231));
+            delay(567, 789);
 
             if (Inventory.isItemSelected()) {
                 getItems().get(14).click();
             }
+
+            delay(567, 789);
 
             if (!getWineMakingInterface().isEmpty()) {
                 log.info("Pressing space to make wine");
@@ -220,8 +221,6 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
             }
 
         }
-
-        delay(Random.nextLong(123, 235));
 
         if (!getWineMakingInterface().isEmpty()) {
             log.info("Pressing space to make wine");
