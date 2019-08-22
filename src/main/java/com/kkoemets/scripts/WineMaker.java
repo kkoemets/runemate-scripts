@@ -76,7 +76,6 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
                 if (getItems(GRAPES).size() == halfOfInventory
                         && getItems(JUG_OF_WATER).size() == halfOfInventory) {
                     makeWine();
-                    delay(2000);
                 } else {
                     clickOnBankBoothToOpenBank();
                     delay(nextLong(523, 1121));
