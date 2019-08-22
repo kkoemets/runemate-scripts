@@ -111,7 +111,8 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
             case ABSORPTION_AND_OVERLOAD_MODE:
                 absorptionAndOverloadModeScript();
         }
-        log.debug("End of main loop");
+        log.debug("End of main loop, overload time approx. left: "  + (getOverloadTime().isPresent() ?
+                getOverloadTime().get().getValue() * 15 : 0) + " seconds");
     }
 
     private void absorptionAndOverloadModeScript() {
