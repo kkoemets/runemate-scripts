@@ -67,7 +67,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
             return;
         }
 
-        if (!isPlayerIdle()) {
+        if (delay(664, 987) && !isPlayerIdle()) {
             log.info("Player is making wine");
             return;
         }
