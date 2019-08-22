@@ -72,7 +72,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
             return;
         }
 
-        if (!Bank.isOpen()) {
+        if (!Bank.isOpen() && !hasPlayer14JugsOfWaterAnd14Grapes()) {
             clickOnBankBoothToOpenBank();
         }
 
@@ -80,7 +80,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
             depositInventoryAndGetWineMaterials();
         }
 
-        if (hasPlayer14JugsOfWaterAnd14Grapes()) {
+        if (hasPlayer14JugsOfWaterAnd14Grapes() && !Bank.isOpen()) {
             makeWine();
         }
 
