@@ -2,15 +2,12 @@ package com.kkoemets.scripts;
 
 import com.kkoemets.api.common.interaction.InteractionHandler;
 import com.runemate.game.api.hybrid.entities.GameObject;
-import com.runemate.game.api.hybrid.input.Keyboard;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Interfaces;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.queries.results.InterfaceComponentQueryResults;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
-import com.runemate.game.api.hybrid.region.Banks;
-import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.framework.LoopingBot;
 import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
@@ -21,13 +18,15 @@ import java.util.Optional;
 
 import static com.kkoemets.playersense.CustomPlayerSense.Key.REACTION_TIME;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
+import static com.runemate.game.api.hybrid.input.Keyboard.pressKey;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.DefaultQuantity.X;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.*;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
+import static com.runemate.game.api.hybrid.region.Banks.getLoadedBankBooths;
+import static com.runemate.game.api.hybrid.region.Players.getLocal;
 import static com.runemate.game.api.hybrid.util.calculations.Random.nextLong;
 import static com.runemate.game.api.script.Execution.delay;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
+import static java.util.Optional.*;
 
 public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
@@ -63,24 +62,28 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
     @Override
     public void onLoop() {
-        if (!Optional.ofNullable(Players.getLocal()).isPresent()) {
+        if (!ofNullable(getLocal()).isPresent()) {
             log.info("Player is not found, waiting...");
             return;
         }
 
         if (!isPlayerIdle()) {
             log.info("Player is making wine");
-        } else if (!Bank.isOpen()) {
-            if (isPlayerIdle()) {
-                if (hasPlayer14JugsOfWaterAnd14Grapes()) {
-                    makeWine();
-                } else {
-                    clickOnBankBoothToOpenBank();
-                }
-            }
-        } else {
+            return;
+        }
+
+        if (!Bank.isOpen()) {
+            clickOnBankBoothToOpenBank();
+        }
+
+        if (Bank.isOpen()) {
             depositInventoryAndGetWineMaterials();
         }
+
+        if (hasPlayer14JugsOfWaterAnd14Grapes()) {
+            makeWine();
+        }
+
         log.debug("End of main loop");
     }
 
@@ -102,16 +105,15 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
     }
 
     private boolean isPlayerIdle() {
-        return Players.getLocal().getAnimationId() == -1;
+        return getLocal().getAnimationId() == -1;
     }
 
     private void clickOnBankBoothToOpenBank() {
-        if (getNearestBankBooth().isPresent()) {
-            openBank();
-            delay(658, 878);
-        } else {
+        if (!getNearestBankBooth().isPresent()) {
             throw new IllegalStateException("Could not find a bank booth!");
         }
+        openBank();
+        delay(658, 878);
     }
 
     private void depositInventoryIfNeeded() {
@@ -187,7 +189,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         if (!getNearestBankBooth().get().isVisible()) {
             log.debug("Bank booth is not visible, rotating camera");
             interactionHandler.turnCameraToCoordinate(getNearestBankBooth().get().getPosition(),
-                    Players.getLocal());
+                    getLocal());
         }
         log.debug("Clicking on bank booth");
         getNearestBankBooth().get().click();
@@ -226,14 +228,14 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
             if (!getWineMakingInterface().isEmpty()) {
                 log.info("Pressing space to make wine");
-                Keyboard.pressKey(spaceKey);
+                pressKey(spaceKey);
             }
 
         }
 
         if (!getWineMakingInterface().isEmpty()) {
             log.info("Pressing space to make wine");
-            Keyboard.pressKey(spaceKey);
+            pressKey(spaceKey);
         }
     }
 
@@ -242,7 +244,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
     }
 
     private Optional<GameObject> getNearestBankBooth() {
-        LocatableEntityQueryResults<GameObject> bankers = Banks.getLoadedBankBooths()
+        LocatableEntityQueryResults<GameObject> bankers = getLoadedBankBooths()
                 .sortByDistance();
         return bankers.isEmpty() ? empty() : of(bankers.get(0));
     }
