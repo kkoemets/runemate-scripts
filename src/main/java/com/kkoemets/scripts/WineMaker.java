@@ -211,14 +211,14 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
             }
 
             if (!Inventory.isItemSelected()) {
-                log.debug("Clicking on 13th item in inventory");
+                log.debug("Clicking on 14th item in inventory");
                 getItems().get(13).click();
             }
 
             delay(567, 789);
 
             if (Inventory.isItemSelected()) {
-                log.debug("Clicking on 14th item in inventory");
+                log.debug("Clicking on 15th item in inventory");
                 getItems().get(14).click();
             }
 
