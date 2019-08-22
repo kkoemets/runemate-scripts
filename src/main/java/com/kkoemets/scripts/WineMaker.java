@@ -31,7 +31,7 @@ import static java.util.Optional.of;
 
 public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
-    private static int halfOfInventory = 14;
+    private static final int halfOfInventory = 14;
     private final String JUG_OF_WATER = "Jug of water";
     private final String GRAPES = "Grapes";
     private String aSetting;
@@ -92,7 +92,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
         withdrawJugsAndGrapes();
 
-        if (getItems("Grapes", "Jug of water").size() == 28) {
+        if (getItems(GRAPES, JUG_OF_WATER).size() == 28) {
             Bank.close();
         }
     }
