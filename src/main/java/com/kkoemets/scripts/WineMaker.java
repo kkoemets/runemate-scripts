@@ -19,7 +19,6 @@ import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import java.util.Optional;
 
-import static com.kkoemets.playersense.CustomPlayerSense.Key.ACTIVENESS_FACTOR_WHILE_WAITING;
 import static com.kkoemets.playersense.CustomPlayerSense.Key.REACTION_TIME;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.DefaultQuantity.X;
@@ -50,7 +49,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         // Submit your MoneyPouchListener
         getEventDispatcher().addListener(this);
         // Sets the length of time in milliseconds to wait before calling onLoop again
-        setLoopDelay((Random.nextInt(456, 1342)));
+        setLoopDelay((Random.nextInt(869, 1342)));
         // Load script configuration
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
