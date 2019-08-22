@@ -5,7 +5,7 @@ import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.input.Keyboard;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Interfaces;
-import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
+import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.queries.results.InterfaceComponentQueryResults;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
@@ -157,22 +157,24 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
     }
 
     private void withdrawJugsAndGrapes() {
-        if (!getJugOfWaterInBank().isPresent()) {
-            throw new IllegalStateException("Could not find jugs of water!");
+        SpriteItemQueryResults jugsAndGrapes = Bank.getItems(JUG_OF_WATER, GRAPES);
+
+        if (jugsAndGrapes.get(0).getQuantity() < halfOfInventory) {
+            throw new IllegalStateException("Not enough jugs of water in bank!");
         }
-        if (!getGrapesInBank().isPresent()) {
-            throw new IllegalStateException("Could not find jugs of water!");
-        }
-        if (getItems(JUG_OF_WATER).size() != halfOfInventory) {
-            log.info("Withdrawing jugs of water");
-            getJugOfWaterInBank().get().click();
-            delay(bankSpecificReactionTime());
+        if (jugsAndGrapes.get(1).getQuantity() < halfOfInventory) {
+            throw new IllegalStateException("Not enough grapes in bank!");
         }
 
-        if (getItems(GRAPES).size() != halfOfInventory) {
-            log.info("Withdrawing grapes");
-            getGrapesInBank().get().click();
-            delay(bankSpecificReactionTime());
+        jugsAndGrapes.sortByIndex();
+
+        log.info("Withdrawing jugs and grapes");
+        if (getItems(jugsAndGrapes.get(0).getId()).isEmpty()) {
+            jugsAndGrapes.get(0).click();
+        }
+        delay(bankSpecificReactionTime());
+        if (getItems(jugsAndGrapes.get(1).getId()).isEmpty()) {
+            jugsAndGrapes.get(1).click();
         }
     }
 
@@ -202,9 +204,15 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
                 return;
             }
 
-            getItems().get(13).click();
+            if (!Inventory.isItemSelected()) {
+                getItems().get(13).click();
+            }
+
             delay(REACTION_TIME.getAsLong() * 4 + nextLong(-121, 231));
-            getItems().get(14).click();
+
+            if (Inventory.isItemSelected()) {
+                getItems().get(14).click();
+            }
 
             if (!getWineMakingInterface().isEmpty()) {
                 log.info("Pressing space to make wine");
@@ -223,17 +231,6 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
     private InterfaceComponentQueryResults getWineMakingInterface() {
         return Interfaces.newQuery().names("Unfermented wine").results();
-    }
-
-
-    private Optional<SpriteItem> getJugOfWaterInBank() {
-        SpriteItemQueryResults jugOfWater = Bank.getItems(JUG_OF_WATER);
-        return jugOfWater.isEmpty() ? empty() : of(jugOfWater.get(0));
-    }
-
-    private Optional<SpriteItem> getGrapesInBank() {
-        SpriteItemQueryResults grapes = Bank.getItems(GRAPES);
-        return grapes.isEmpty() ? empty() : of(grapes.get(0));
     }
 
     private Optional<GameObject> getNearestBankBooth() {
