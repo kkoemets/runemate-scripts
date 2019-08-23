@@ -111,23 +111,27 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
             case ABSORPTION_AND_OVERLOAD_MODE:
                 absorptionAndOverloadModeScript();
         }
-        log.debug("End of main loop, overload time approx. left: "  + (getOverloadTime().isPresent() ?
+        log.debug("End of main loop, overload time approx. left: " + (getOverloadTime().isPresent() ?
                 getOverloadTime().get().getValue() * 15 : 0) + " seconds");
     }
 
     private void absorptionAndOverloadModeScript() {
         if (!getOverloadPotions().isEmpty()) {
-            if (!getOverloadTime().isPresent() || hasOverloadPotionEnded()) {
+            if ((!getOverloadTime().isPresent() || hasOverloadPotionEnded()) && !isHpUnder(50)) {
                 log.info("Drinking overload potion");
                 drinkOverloadDose();
+
                 if (!getAbsorptionPotions().isEmpty()) {
                     log.info("Drinking absorption potions until full");
                     drinkAbsorptionPotionsUntilFull();
                 }
-                if (getOverloadTime().isPresent() && !hasOverloadPotionEnded()) {
-                    log.info("Guzzling dwarven rock cake until full");
-                    guzzleRockCakeUntilHpIs(1);
+
+                if (!getOverloadTime().isPresent() || hasOverloadPotionEnded()) {
+                    return;
                 }
+
+                log.info("Guzzling dwarven rock cake until full");
+                guzzleRockCakeUntilHpIs(1);
             }
         } else {
             log.info("No overloads, using absorption potions only mode");
