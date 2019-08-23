@@ -117,9 +117,11 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
 
     private void absorptionAndOverloadModeScript() {
         if (!getOverloadPotions().isEmpty()) {
-            if ((!getOverloadTime().isPresent() || hasOverloadPotionEnded()) && !isHpUnder(50)) {
-                log.info("Drinking overload potion");
-                drinkOverloadDose();
+            if ((!getOverloadTime().isPresent() || hasOverloadPotionEnded())) {
+                if (isHpGreaterThan(50)) {
+                    log.info("Drinking overload potion");
+                    drinkOverloadDose();
+                }
 
                 if (!getAbsorptionPotions().isEmpty()) {
                     log.info("Drinking absorption potions until full");
@@ -140,21 +142,25 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
     }
 
     private void absorptionModeScript() {
-        if (isHpUnder(hpThresholdContainer.getThreshold())) {
+        if (isHpGreaterThan(hpThresholdContainer.getThreshold())) {
             log.info("Hp is below threshold: " + hpThresholdContainer.getThreshold());
             log.info("Starting to guzzle dwarven rock cake until hp is 1");
             guzzleRockCakeUntilHpIs(1);
+
             hpThresholdContainer.nextThreshold();
             log.info("New hp threshold: " + hpThresholdContainer.getThreshold());
+
             if ((!getAbsorptionPoints().isPresent()
                     || isAbsorptionPointsUnder(getAbsorptionPoints().get(),
                     absorptionPointsThreshold.getThreshold())) && !getAbsorptionPotions().isEmpty()) {
                 log.info("Absorption potion is below threshold: " +
+
                         absorptionPointsThreshold.getThreshold());
+
                 drinkAbsorptionPotionsUntilFull();
+
                 absorptionPointsThreshold.nextThreshold();
-                log.info("New absorption potion threshold: " +
-                        absorptionPointsThreshold.getThreshold());
+                log.info("New absorption potion threshold: " + absorptionPointsThreshold.getThreshold());
             }
         }
     }
@@ -260,7 +266,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
         return Inventory.getItems(DWARWEN_ROCK_CAKE);
     }
 
-    private boolean isHpUnder(int i) {
+    private boolean isHpGreaterThan(int i) {
         return Health.getCurrent() > i;
     }
 
