@@ -200,7 +200,6 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
                 delay(1000);
                 ChatDialog.getOption(1).select();
                 log.info("A dream has been bought");
-
             }
         }
 
@@ -209,16 +208,11 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
             log.info("Everything is ready for a dream");
             potion.get(0).interact("Drink");
         }
-
     }
 
     private Optional<Varbit> getAbsorptionPoints() {
         int absorptionPointsVarBit = 3956;
         return ofNullable(load(absorptionPointsVarBit));
-    }
-
-    private void drinkInitialOverloadDose() {
-        getOverloadPotions().get(0).click();
     }
 
     private boolean hasOverloadPotionEnded() {
@@ -230,10 +224,8 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
         return ofNullable(load(overloadVarBit));
     }
 
-    private void drinkOverloadDose() {
-        delay(Random.nextInt(3533, 5345));
-        drinkInitialOverloadDose();
-        delay(Random.nextInt(5533, 6345));
+    private boolean drinkOverloadDose() {
+        return delay(Random.nextInt(3533, 5345)) && getOverloadPotions().sortByIndex().get(0).click();
     }
 
     private void drinkAbsorptionPotionsUntilFull() {
