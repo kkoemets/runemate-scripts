@@ -13,6 +13,7 @@ import com.runemate.game.api.hybrid.local.hud.interfaces.Health;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
+import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Npcs;
@@ -37,10 +38,6 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
 public class NightmareZone extends LoopingBot implements MoneyPouchListener {
-
-    private final String DWARWEN_ROCK_CAKE = "Dwarven rock cake";
-    private final int absorptionPointsVarBit = 3956;
-    private final int overloadVarBit = 3955;
 
     private String aSetting;
     private BotLogger log;
@@ -167,48 +164,56 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
 
     private void nmzScript() {
         if (!ofNullable(getLocal()).isPresent()) {
-
-        } else if (!dominicArea.contains(getLocal().getPosition())) { //TODO!!! also check that is
-            // not in nightmare zone
+            log.info("Waiting for player to appear in-game...");
+            return;
+        }
+        if (!dominicArea.contains(getLocal().getPosition())) {
             throw new IllegalStateException("Player is not near Nightmare Zone vial and is not in" +
                     " a dream");
-        } else if (getDwarvenRockCake().isEmpty()) {
+        }
+
+        if (getDwarvenRockCake().isEmpty()) {
             throw new IllegalStateException("Player does not have a rock cake in the inventory");
-        } else if (getAbsorptionPotions().isEmpty()) {
+        }
+
+        if (getAbsorptionPotions().isEmpty()) {
             throw new IllegalStateException("Player does not have absorption potions in the " +
                     "inventory");
-        } else if (dominicArea.contains(getLocal().getPosition())) {
-            if (!GameObjects.newQuery().names("Empty vial").results().isEmpty()) {
-                log.info("Dream has not been started to yet, talking to Dominic Onion");
-                Optional<Npc> dominicOnion = ofNullable(Npcs.newQuery().names("Dominic Onion")
-                        .results().get(0));
-                if (dominicOnion.isPresent()) {
-                    log.info("Clicking on Dominic Onion to start a dream");
-                    dominicOnion.get().interact("Dream");
-                    // TODO!!! sleep orsmth
-                    delay(5000);
-                    if (ChatDialog.isOpen()) {
-                        log.info("Chat is open with Dominic Onion");
-                        ofNullable(ChatDialog.getOption(4).select());
-                        delay(1000);
-                        ChatDialog.getContinue().select();
-                        delay(1000);
-                        ChatDialog.getOption(1).select();
-                        log.info("A dream has been bought");
-                    }
-                }
-            } else {
-                Optional<GameObject> potion = ofNullable(GameObjects.newQuery()
-                        .names("Potion").results().get(0));
-                if (potion.isPresent()) {
-                    log.info("Everything is ready for a dream");
-                    potion.get().interact("Drink");
-                }
+        }
+
+        if (delay(677, 986) && getLocal().getAnimationId() != -1) {
+            log.info("Player is doing something...");
+            return;
+        }
+
+        if (!GameObjects.newQuery().names("Empty vial").results().isEmpty()) {
+            log.info("Dream has not been started to yet, talking to Dominic Onion");
+            Npc dominicOnion = Npcs.newQuery().names("Dominic Onion").results().get(0);
+            log.info("Clicking on Dominic Onion to start a dream");
+            dominicOnion.interact("Dream");
+            delay(5000);
+            if (ChatDialog.isOpen()) {
+                log.info("Chat is open with Dominic Onion");
+                ChatDialog.getOption(4).select();
+                delay(1000);
+                ChatDialog.getContinue().select();
+                delay(1000);
+                ChatDialog.getOption(1).select();
+                log.info("A dream has been bought");
+
             }
         }
+
+        LocatableEntityQueryResults<GameObject> potion = GameObjects.newQuery().names("Potion").results();
+        if (!potion.isEmpty()) {
+            log.info("Everything is ready for a dream");
+            potion.get(0).interact("Drink");
+        }
+
     }
 
     private Optional<Varbit> getAbsorptionPoints() {
+        int absorptionPointsVarBit = 3956;
         return ofNullable(load(absorptionPointsVarBit));
     }
 
@@ -221,6 +226,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
     }
 
     private Optional<Varbit> getOverloadTime() {
+        int overloadVarBit = 3955;
         return ofNullable(load(overloadVarBit));
     }
 
@@ -263,7 +269,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
     }
 
     private SpriteItemQueryResults getDwarvenRockCake() {
-        return Inventory.getItems(DWARWEN_ROCK_CAKE);
+        return Inventory.getItems("Dwarven rock cake");
     }
 
     private boolean isHpGreaterThan(int i) {
