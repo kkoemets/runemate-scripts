@@ -130,7 +130,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
                     return;
                 }
 
-                delayWhile(() -> getOverloadTime().get().getValue() > 19, 5657, 13213);
+                delayWhile(() -> getOverloadTime().get().getValue() > 19, 8757, 13213);
                 log.info("Guzzling dwarven rock cake until full");
                 guzzleRockCakeUntilHpIs(1);
             }
@@ -273,7 +273,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
     }
 
     private boolean isAbsorptionPointsUnderMax(Varbit absorptionPoints) {
-        return isAbsorptionPointsUnder(absorptionPoints, 950);
+        return isAbsorptionPointsUnder(absorptionPoints, 951);
     }
 
     private SpriteItemQueryResults getAbsorptionPotions() {
