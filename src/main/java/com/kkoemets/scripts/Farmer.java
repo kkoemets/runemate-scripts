@@ -1,15 +1,20 @@
 package com.kkoemets.scripts;
 
+import com.runemate.game.api.hybrid.entities.Npc;
+import com.runemate.game.api.hybrid.local.hud.interfaces.ChatDialog;
+import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.location.navigation.Traversal;
 import com.runemate.game.api.hybrid.location.navigation.web.WebPath;
+import com.runemate.game.api.hybrid.region.GameObjects;
+import com.runemate.game.api.hybrid.region.Npcs;
+import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.osrs.local.hud.interfaces.Magic;
+import com.runemate.game.api.script.Execution;
 import com.runemate.game.api.script.framework.LoopingBot;
 import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
 import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
 import com.runemate.game.api.script.framework.logger.BotLogger;
-
-import java.util.Objects;
 
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
@@ -30,7 +35,7 @@ public class Farmer extends LoopingBot implements MoneyPouchListener {
         // Submit your MoneyPouchListener
         getEventDispatcher().addListener(this);
         // Sets the length of time in milliseconds to wait before calling onLoop again
-        setLoopDelay(1344, 1455);
+        setLoopDelay(2344, 3255);
         // Load script configuration
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
@@ -46,10 +51,31 @@ public class Farmer extends LoopingBot implements MoneyPouchListener {
     public void onLoop() {
 //        goToFaladorTreeSpot();
 //        log.debug(getLocal().getPosition());
-        goToFaladorTreeSpot();
+//        goToFaladorTreeSpot();
 //        goTo(TAVERLY_TREE_SPOT);
 //        goToVarrockTreeSpot();
 //        goToLumbridgeFarmingSpot();
+
+        if (Players.getLocal().getAnimationId() == -1 && !GameObjects.newQuery().names("Tree " +
+                "patch").results().get(0).interact("Rake")) {
+            Inventory.getItems("Yew sapling").get(0).click();
+            GameObjects.newQuery().names("Tree patch").results().get(0).getPosition().click();
+        }
+        if (!GameObjects.newQuery().names("Yew sapling", "Yew tree").results().isEmpty()) {
+            Npc farmingNpc = Npcs.newQuery().names("Heskel").results().get(0);
+            log.debug(farmingNpc);
+
+            if (!ChatDialog.isOpen()) {
+                farmingNpc.interact("Pay");
+            }
+
+            Execution.delayUntil(ChatDialog::isOpen, 10000);
+            ChatDialog.getOption(1).select();
+            Execution.delayUntil((() -> ChatDialog.getContinue() != null), 10000);
+            ChatDialog.getContinue().select();
+        }
+
+
     }
 
     private void goToLumbridgeFarmingSpot() {

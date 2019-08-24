@@ -33,6 +33,7 @@ import static com.runemate.game.api.hybrid.local.Varbits.load;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
 import static com.runemate.game.api.script.Execution.delay;
+import static com.runemate.game.api.script.Execution.delayWhile;
 import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -129,6 +130,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
                     return;
                 }
 
+                delayWhile(() -> getOverloadTime().get().getValue() > 19, 5657, 13213);
                 log.info("Guzzling dwarven rock cake until full");
                 guzzleRockCakeUntilHpIs(1);
             }
@@ -224,8 +226,10 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
         return ofNullable(load(overloadVarBit));
     }
 
-    private boolean drinkOverloadDose() {
-        return delay(Random.nextInt(3533, 5345)) && getOverloadPotions().sortByIndex().get(0).click();
+    private void drinkOverloadDose() {
+        getOverloadPotions().sortByIndex().get(0).click();
+        delayWhile(() -> !getOverloadTime().isPresent() || getOverloadTime().get().getValue() != 20,
+                3533, 5345);
     }
 
     private void drinkAbsorptionPotionsUntilFull() {

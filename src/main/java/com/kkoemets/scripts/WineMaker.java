@@ -16,7 +16,6 @@ import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import java.util.Optional;
 
-import static com.kkoemets.playersense.CustomPlayerSense.Key.REACTION_TIME;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.runemate.game.api.hybrid.input.Keyboard.pressKey;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.DefaultQuantity.X;
@@ -24,8 +23,7 @@ import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.*;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
 import static com.runemate.game.api.hybrid.region.Banks.getLoadedBankBooths;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
-import static com.runemate.game.api.hybrid.util.calculations.Random.nextLong;
-import static com.runemate.game.api.script.Execution.delay;
+import static com.runemate.game.api.script.Execution.*;
 import static java.util.Optional.*;
 
 public class WineMaker extends LoopingBot implements MoneyPouchListener {
@@ -113,7 +111,6 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
             throw new IllegalStateException("Could not find a bank booth!");
         }
         openBank();
-        delay(658, 878);
     }
 
     private void depositInventoryIfNeeded() {
@@ -138,26 +135,21 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
         log.info("Depositing inventory to bank");
         depositInventory();
+        delayWhile(() -> getItems().size() != 0, 1244, 3232);
     }
 
     private void setupDefaultQuantityIfNeeded() {
         if (getExactDefaultQuantity() != halfOfInventory) {
             log.info("Default X quantity is not 14, setting to 14");
             setDefaultQuantity(halfOfInventory);
-            delay(bankSpecificReactionTime());
         }
 
-        delay(bankSpecificReactionTime());
+        delayUntil(() -> getExactDefaultQuantity() == halfOfInventory, 5000);
 
         if (getDefaultQuantity() != X) {
             log.info("Default quantity is not X, setting to X");
             setDefaultQuantity(X);
-            delay(bankSpecificReactionTime());
         }
-    }
-
-    private Long bankSpecificReactionTime() {
-        return REACTION_TIME.getAsLong() * 2 + nextLong(-17, 167);
     }
 
     private void withdrawJugsAndGrapes() {
@@ -176,11 +168,13 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         if (getItems(jugsAndGrapes.get(0).getId()).isEmpty()) {
             log.debug("Withdrawing first ingredient");
             jugsAndGrapes.get(0).click();
+            delayUntil(() -> getItems(jugsAndGrapes.get(0).getId()).size() != 1244, 3232);
         }
-        delay(bankSpecificReactionTime());
+
         if (getItems(jugsAndGrapes.get(1).getId()).isEmpty()) {
             log.debug("Withdrawing second ingredient");
             jugsAndGrapes.get(1).click();
+            delayWhile(() -> getItems(jugsAndGrapes.get(1).getId()).size() != 14, 1244, 3232);
         }
     }
 
@@ -193,6 +187,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         }
         log.debug("Clicking on bank booth");
         getNearestBankBooth().get().click();
+        delayWhile(() -> !Bank.isOpen(), 2345, 3432);
     }
 
     private void makeWine() {
@@ -217,14 +212,14 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
                 getItems().get(13).click();
             }
 
-            delay(567, 789);
+            delayWhile(() -> !Inventory.isItemSelected(), 874, 1342);
 
             if (Inventory.isItemSelected()) {
                 log.debug("Clicking on 15th item in inventory");
                 getItems().get(14).click();
             }
 
-            delay(567, 789);
+            delayWhile(() -> getWineMakingInterface().isEmpty(), 874, 1342);
         }
 
         if (!getWineMakingInterface().isEmpty()) {
