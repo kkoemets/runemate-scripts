@@ -32,8 +32,7 @@ import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.runemate.game.api.hybrid.local.Varbits.load;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
-import static com.runemate.game.api.script.Execution.delay;
-import static com.runemate.game.api.script.Execution.delayWhile;
+import static com.runemate.game.api.script.Execution.*;
 import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -130,7 +129,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
                     return;
                 }
 
-                delayWhile(() -> getOverloadTime().get().getValue() > 19, 8757, 13213);
+                delayWhile(() -> getOverloadTime().get().getValue() > 19, 5757, 7213);
                 log.info("Guzzling dwarven rock cake until full");
                 guzzleRockCakeUntilHpIs(1);
             }
@@ -205,7 +204,8 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
             }
         }
 
-        LocatableEntityQueryResults<GameObject> potion = GameObjects.newQuery().names("Potion").results();
+        LocatableEntityQueryResults<GameObject> potion = GameObjects.newQuery().names("Potion")
+                .results();
         if (!potion.isEmpty()) {
             log.info("Everything is ready for a dream");
             potion.get(0).interact("Drink");

@@ -15,15 +15,18 @@ import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.runemate.game.api.hybrid.input.Keyboard.pressKey;
+import static com.runemate.game.api.hybrid.input.Keyboard.releaseKey;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.DefaultQuantity.X;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.*;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
 import static com.runemate.game.api.hybrid.region.Banks.getLoadedBankBooths;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
-import static com.runemate.game.api.script.Execution.*;
+import static com.runemate.game.api.script.Execution.delay;
+import static com.runemate.game.api.script.Execution.delayUntil;
 import static java.util.Optional.*;
 
 public class WineMaker extends LoopingBot implements MoneyPouchListener {
@@ -134,8 +137,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         }
 
         log.info("Depositing inventory to bank");
-        depositInventory();
-        delayWhile(() -> getItems().size() != 0, 1244, 3232);
+        delayUntil(Bank::depositInventory, 1244, 3232);
     }
 
     private void setupDefaultQuantityIfNeeded() {
@@ -167,14 +169,15 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         log.info("Withdrawing jugs and grapes");
         if (getItems(jugsAndGrapes.get(0).getId()).isEmpty()) {
             log.debug("Withdrawing first ingredient");
-            jugsAndGrapes.get(0).click();
-            delayUntil(() -> getItems(jugsAndGrapes.get(0).getId()).size() != 1244, 3232);
+            delayUntilWithDelay(() -> getItems(jugsAndGrapes.get(0).getId()).size() == 14
+                    || jugsAndGrapes.get(0).click());
         }
 
         if (getItems(jugsAndGrapes.get(1).getId()).isEmpty()) {
             log.debug("Withdrawing second ingredient");
-            jugsAndGrapes.get(1).click();
-            delayWhile(() -> getItems(jugsAndGrapes.get(1).getId()).size() != 14, 1244, 3232);
+            delayUntilWithDelay(() -> getItems(jugsAndGrapes.get(1).getId()).size() == 14
+                    || jugsAndGrapes.get(1).click()
+            );
         }
     }
 
@@ -186,8 +189,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
                     getLocal());
         }
         log.debug("Clicking on bank booth");
-        getNearestBankBooth().get().click();
-        delayWhile(() -> !Bank.isOpen(), 2345, 3432);
+        delayUntilWithDelay(() -> Bank.isOpen() || getNearestBankBooth().get().click());
     }
 
     private void makeWine() {
@@ -212,20 +214,22 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
                 getItems().get(13).click();
             }
 
-            delayWhile(() -> !Inventory.isItemSelected(), 874, 1342);
-
             if (Inventory.isItemSelected()) {
                 log.debug("Clicking on 15th item in inventory");
                 getItems().get(14).click();
             }
-
-            delayWhile(() -> getWineMakingInterface().isEmpty(), 874, 1342);
         }
 
         if (!getWineMakingInterface().isEmpty()) {
             log.info("Pressing space to make wine");
             pressKey(spaceKey);
+            delay(24, 39);
+            releaseKey(spaceKey);
         }
+    }
+
+    private void delayUntilWithDelay(Callable<Boolean> condition) {
+        delayUntil(() -> condition.call() && delay(435, 786), 1244, 3232);
     }
 
     private InterfaceComponentQueryResults getWineMakingInterface() {
