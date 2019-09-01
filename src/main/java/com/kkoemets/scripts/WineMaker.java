@@ -15,9 +15,7 @@ import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
 import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
-import java.sql.Date;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.kkoemets.scripts.WineMaker.WineMakerScriptState.*;
@@ -55,7 +53,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         // Submit your MoneyPouchListener
         getEventDispatcher().addListener(this);
         // Sets the length of time in milliseconds to wait before calling onLoop again
-        setLoopDelay((Random.nextInt(623, 750)));
+        setLoopDelay((Random.nextInt(432, 576)));
         // Load script configuration
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
@@ -96,7 +94,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
             case PRESS_SPACE:
                 return pressSpace();
             case WAIT:
-                return delay(678, 1234) && !isPlayerIdle() ? WAIT : OPEN_BANK;
+                return delay(1234, 1432) && !isPlayerIdle() ? WAIT : OPEN_BANK;
             default:
                 throw new IllegalStateException("Script crashed due to unhandled state-" + state);
         }
@@ -113,6 +111,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
     private WineMakerScriptState openBank() {
         if (!Bank.isOpen()) {
             clickOnBankBooth();
+            delay(234, 345);
             return DECIDE_NEXT_STATE_FROM_OPENED_BANK;
         }
 
@@ -169,7 +168,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         }
 
         log.info("Depositing inventory to bank");
-        delayUntil(Bank::depositInventory, 1244, 3232);
+        Bank.depositInventory();
         return WITHDRAW_JUGS_AND_GRAPES;
     }
 
@@ -246,8 +245,9 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         if (!Inventory.isItemSelected()) {
             log.debug("Clicking on 14th item in inventory");
             getItems().get(13).click();
-            return MAKE_WINE;
         }
+
+        delay(234, 345);
 
         log.debug("Clicking on 15th item in inventory");
         getItems().get(14).click();
@@ -272,10 +272,6 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
     private boolean isPlayerIdle() {
         Player player = getLocal();
         return player == null || player.getAnimationId() == -1;
-    }
-
-    private void delayUntilWithDelay(Callable<Boolean> condition) {
-        delayUntil(() -> condition.call() && delay(435, 786), 1244, 3232);
     }
 
     private Optional<GameObject> getNearestBankBooth() {
@@ -314,14 +310,14 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         log.info("Withdrawing jugs and grapes");
         if (getItems(jugsAndGrapes.get(0).getId()).isEmpty()) {
             log.debug("Withdrawing first ingredient");
-            delayUntilWithDelay(() -> getItems(jugsAndGrapes.get(0).getId()).size() == 14
-                    || jugsAndGrapes.get(0).click());
+            jugsAndGrapes.get(0).click();
         }
+
+        delay(234, 342);
 
         if (getItems(jugsAndGrapes.get(1).getId()).isEmpty()) {
             log.debug("Withdrawing second ingredient");
-            delayUntilWithDelay(() -> getItems(jugsAndGrapes.get(1).getId()).size() == 14
-                    || jugsAndGrapes.get(1).click());
+            jugsAndGrapes.get(1).click();
         }
     }
 
