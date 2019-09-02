@@ -130,7 +130,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
 
         WineMakerScriptState setupResultState = setupDefaultQuantityIfNeeded();
         if (setupResultState == OPEN_BANK) {
-            return setupResultState;
+            return OPEN_BANK;
         }
 
         return DECIDE_NEXT_STATE_FROM_OPENED_BANK;
@@ -334,7 +334,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
     }
 
     private long minutesToMillis(double minutes) {
-        return (long) minutes * 60 * 1000;
+        return (long) (minutes * 60 * 1000);
     }
 
     enum WineMakerScriptState {
