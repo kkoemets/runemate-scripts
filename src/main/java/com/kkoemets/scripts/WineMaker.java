@@ -41,10 +41,12 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
     private static final int halfOfInventory = 14;
     private final String JUG_OF_WATER = "Jug of water";
     private final String GRAPES = "Grapes";
-    private final Timer timer = new Timer(minutesToMillis(12.4), minutesToMillis(17.4));
+    private final double minInterval = 7.4;
+    private final double maxInterval = 25.4;
+    private final Timer timer = new Timer(minutesToMillis(minInterval), minutesToMillis(maxInterval));
     private String aSetting;
     private BotLogger log;
-    private long stopTime = nextLong(minutesToMillis(12.4), minutesToMillis(17.4));
+    private long stopTime = nextLong(minutesToMillis(minInterval), minutesToMillis(maxInterval));
     private InteractionHandler interactionHandler;
     private WineMakerScriptState state = WAIT_LOGIN;
 
@@ -76,7 +78,7 @@ public class WineMaker extends LoopingBot implements MoneyPouchListener {
         if (timer.getElapsedTime() >= stopTime && state == WAIT) {
             delay(minutesToMillis(0.92), minutesToMillis(2.31));
             timer.reset();
-            stopTime = nextLong(minutesToMillis(12.4), minutesToMillis(17.4));
+            stopTime = nextLong(minutesToMillis(minInterval), minutesToMillis(maxInterval));
         }
 
         WineMakerScriptState returnedStateFromScript = script(state);
