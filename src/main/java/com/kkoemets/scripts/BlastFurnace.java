@@ -11,6 +11,7 @@ import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.calculations.Random;
+import com.runemate.game.api.script.Execution;
 import com.runemate.game.api.script.framework.LoopingBot;
 import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
 import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
@@ -19,9 +20,12 @@ import com.runemate.game.api.script.framework.logger.BotLogger;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.kkoemets.scripts.BlastFurnace.BlastFurnaceAction.*;
 import static com.kkoemets.scripts.BlastFurnace.BlastFurnaceScriptState.*;
+import static com.runemate.game.api.hybrid.input.Keyboard.pressKey;
+import static com.runemate.game.api.hybrid.input.Keyboard.releaseKey;
 import static com.runemate.game.api.hybrid.input.Mouse.*;
 import static com.runemate.game.api.hybrid.location.Area.polygonal;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
+import static com.runemate.game.api.script.Execution.delay;
 
 public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 
@@ -63,49 +67,6 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 
     @Override
     public void onLoop() {
-//        log.info(Camera.getZoom()); // 0
-//        log.info(Camera.getYaw());
-//        log.debug(getLocal().getPosition());
-//        if ((Camera.getYaw() < 273 || Camera.getYaw() > 279) && Camera.getPitch() < 0.96) {
-//            MouseWheel.mouseWheelTurnTo(new Coordinate(getLocal().getPosition().getX() + 16, 4960,
-//                            0),
-//                    getLocal());
-//            delay(4546, 7600);
-//
-//        }
-//
-//        press(Mouse.Button.WHEEL);
-//        if ((Camera.getYaw() < 273 || Camera.getYaw() > 279) && Camera.getPitch() < 0.96) {
-//            move(new InteractablePoint((int) (Mouse.getPosition().getX() + 80),
-//                    (int) (Mouse.getPosition().getY() + Random.nextInt(40, 60))));
-//            Execution.delay(124, 196);
-//            release(Mouse.Button.WHEEL);
-//            log.info("Pitch-" + Camera.getPitch());
-//        }
-
-//        setCamera();
-
-//        Execution.delay(1000, 1200);
-//
-//        openBank();
-//
-//        GameObjects.newQuery().names("Conveyor belt").results().get(0).click();
-//
-//        GameObjects.newQuery().names("Bar dispenser").results().get(0);
-//
-//        Interfaces.getSelected().isVisible();
-//
-//        checkForemanPermission();
-
-//        Camera.turnTo(0.95);
-//
-//        log.info("Pitch-" + Camera.getPitch());
-//        log.info("Yaw-" + Camera.getYaw());
-//
-//        if (Camera.getZoom() > Random.nextDouble(0.051, 0.082)) {
-//            log.debug("hi");
-//            Camera.setZoom(0.0275, 0.0225);
-//        }
         log.info(getLocal().getPosition());
 
         BlastFurnaceAction action = decideNextAction();
@@ -113,49 +74,98 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
         switch (action) {
             case OPEN_BANK:
                 log.info("Trying to open bank");
+                openBank();
                 break;
             case WAIT:
                 log.info("Waiting");
+                Execution.delay(656, 789);
                 break;
             case WITHDRAW_ICE_GLOVES:
-                log.info("Trying to withdraw " + ICE_GLOVES);
+                withdraw(ICE_GLOVES, 1);
                 break;
             case WITHDRAW_GOLDSMITH_GAUNTLETS:
                 log.info("Trying to withdraw " + GOLDSMITH_GAUNTLETS);
+                withdraw(GOLDSMITH_GAUNTLETS, 1);
+                break;
+            case WITHDRAW_GOLD_ORE:
+                log.info("Trying to withdraw " + GOLD_ORE);
+                Bank.getItems(GOLD_ORE).get(0).interact("Withdraw-All");
                 break;
             case CLOSE_BANK:
-                log.info("Trying to close bank");
+                closeBank();
                 break;
             case SET_CAMERA_PITCH:
                 log.info("Trying to set correct camera pitch");
+                setCameraPitch();
                 break;
             case SET_CAMERA_YAW:
                 log.info("Trying to set correct camera yaw");
+                setCameraYaw();
                 break;
             case ASK_FOREMAN_PERMISSION:
                 log.info("Trying to ask for foreman's permission");
-                break;
+                throw new IllegalStateException("TODO!");
             case PUT_ORE_IN_CONVEYOR:
                 log.info("Trying to put ore into conveyor");
+                GameObjects.newQuery().names("Conveyor belt").results().forEach(e -> e.interact(
+                        "Put-ore-on"));
                 break;
             case GO_TO_BAR_DISPENSER:
                 log.info("Trying to go to bar dispenser");
+                BAR_DISPENSER_AREA.getRandomCoordinate().click();
                 break;
             case TAKE_BAR_DISPENSER:
                 log.info("Trying to take bars from bar dispenser");
+                pressSpace();
                 break;
             case EQUIP_ICE_GLOVES:
                 log.info("Trying to equip " + ICE_GLOVES);
+                Inventory.getItems(ICE_GLOVES).get(0).click();
                 break;
             case CLICK_ON_BAR_DISPENSER:
                 log.info("Trying to click on bar dispenser");
+                GameObjects.newQuery().names("Bar dispenser").results().get(0).click();
+                break;
             case EQUIP_GOLDSMITH_GAUNTLETS:
                 log.info("Trying to equip " + GOLDSMITH_GAUNTLETS);
+                Inventory.getItems(GOLDSMITH_GAUNTLETS).get(0).click();
+                break;
             default:
                 throw new IllegalArgumentException("Unknown ACTION-" + action);
         }
+    }
 
+    private void openBank() {
+        if (!Bank.isOpen()) {
+            GameObjects.newQuery().names("Bank chest").results().get(0).click();
 
+        }
+    }
+
+    private void closeBank() {
+        log.info("Trying to close bank");
+        if (!Bank.isOpen()) {
+            log.warn("Tried to close bank when it was not opened");
+            return;
+        }
+        Bank.close();
+    }
+
+    private void withdraw(String item, int amount) {
+        if (!Bank.isOpen()) {
+            log.warn("Tried to withdraw item from closed bank");
+            return;
+        }
+        Bank.withdraw(item, 1);
+    }
+
+    private void setCameraYaw() {
+        press(Button.WHEEL);
+        while (isCameraYawIncorrect()) {
+            move(new InteractablePoint((int) (Mouse.getPosition().getX() + Random.nextInt(40, 60)),
+                    (int) (Mouse.getPosition().getY() + Random.nextInt(-5, 5))));
+        }
+        release(Button.WHEEL);
     }
 
     private BlastFurnaceAction decideNextAction() {
@@ -201,11 +211,12 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
                 }
 
                 if (!playerHasGoldsmithGauntletsInInventoryOrEquipment()) {
-                    log.info("Player does not have " + GOLDSMITH_GAUNTLETS + " in inventory/equipment");
+                    log.info("Player does not have " + GOLDSMITH_GAUNTLETS +
+                            " in inventory/equipment");
                     return OPEN_BANK;
                 }
 
-                if (isEquipped(GOLDSMITH_GAUNTLETS)) {
+                if (!isEquipped(GOLDSMITH_GAUNTLETS)) {
                     return EQUIP_GOLDSMITH_GAUNTLETS;
                 }
 
@@ -267,6 +278,11 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
         if (!playerHasGoldsmithGauntletsInInventoryOrEquipment()) {
             return WITHDRAW_GOLDSMITH_GAUNTLETS;
         }
+
+        if (Inventory.getItems(GOLD_ORE).isEmpty()) {
+            return WITHDRAW_GOLD_ORE;
+        }
+
         return CLOSE_BANK;
     }
 
@@ -345,31 +361,25 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
                         coordinate.getY() - distanceFromCenter, 0));
     }
 
-    private void openBank() {
-        if (!Bank.isOpen()) {
-            GameObjects.newQuery().names("Bank chest").results().get(0).click();
-
-        }
-    }
-
-    private void setCamera() {
+    private void setCameraPitch() {
         press(Button.WHEEL);
         while (isCameraPitchIncorrect()) {
             move(new InteractablePoint((int) (Mouse.getPosition().getX() + Random.nextInt(-3, 3)),
                     (int) (Mouse.getPosition().getY() + Random.nextInt(60, 90))));
         }
         release(Button.WHEEL);
-
-        press(Button.WHEEL);
-        while (isCameraYawIncorrect()) {
-            move(new InteractablePoint((int) (Mouse.getPosition().getX() + Random.nextInt(40, 60)),
-                    (int) (Mouse.getPosition().getY() + Random.nextInt(-5, 5))));
-        }
-        release(Button.WHEEL);
     }
 
     private boolean isCameraPitchIncorrect() {
         return Camera.getPitch() < 0.96;
+    }
+
+    private void pressSpace() {
+        int spaceKey = 32;
+        log.info("Pressing space to make wine");
+        pressKey(spaceKey);
+        delay(24, 39);
+        releaseKey(spaceKey);
     }
 
     enum BlastFurnaceScriptState {
@@ -397,6 +407,7 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
         EQUIP_ICE_GLOVES,
         CLICK_ON_BAR_DISPENSER,
         EQUIP_GOLDSMITH_GAUNTLETS,
-        GO_TO_NEAR_BANK
+        GO_TO_NEAR_BANK,
+        WITHDRAW_GOLD_ORE
     }
 }
