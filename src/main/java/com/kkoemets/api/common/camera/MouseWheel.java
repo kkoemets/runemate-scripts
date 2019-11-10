@@ -9,6 +9,8 @@ import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 
 import static com.runemate.game.api.hybrid.input.Mouse.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.atan2;
 
 public class MouseWheel {
 
@@ -22,7 +24,7 @@ public class MouseWheel {
         int Dy = target.getY() - Pc.getY();
         int Yaw = Camera.getYaw();
 
-        int Beta = (int) (Math.atan2(-Dx, Dy) * 180 / Math.PI); //atan2 is in radians so 180/PI wil transform it to degrees, like the game.
+        int Beta = (int) (atan2(-Dx, Dy) * 180 / PI); //atan2 is in radians so 180/PI wil transform it to degrees, like the game.
         if (Beta < 0) Beta = 360 + Beta;
 
         int deltaYaw = Beta - Yaw;
