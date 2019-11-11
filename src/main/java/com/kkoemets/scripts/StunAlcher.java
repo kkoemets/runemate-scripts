@@ -59,10 +59,10 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
             log.info("Player is not visible yet, waiting...");
             return;
         }
-        log.info("Animation id-" + getLocal().getAnimationId());
 
         if (getNpcsWhoAttackPlayer().isEmpty()) {
             log.info("Please attack a target!");
+            return;
         }
 
         log.info("Player is under attack!");
@@ -90,12 +90,11 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
     }
 
     private void stun() {
-        log.info("Trying to stun");
-
         int xpBeforeStun = getMagicXp();
         FailSafeCounter counter = createCounter();
+        do {
+            log.info("Trying to stun");
 
-        while (xpBeforeStun == getMagicXp() || STUN.isSelected()) {
             log.info(counter.increase());
             List<Npc> npcsWhoAttackPlayer = getNpcsWhoAttackPlayer();
             if (npcsWhoAttackPlayer.isEmpty()) {
@@ -109,7 +108,7 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
 
             log.info("Boom! Shooting stun!");
             if (getNpcsWhoAttackPlayer().get(0).click()) return;
-        }
+        } while (delay(223, 245) && (xpBeforeStun == getMagicXp() || STUN.isSelected()));
 
     }
 
@@ -117,19 +116,17 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
         int xpBeforeAlch = getMagicXp();
         FailSafeCounter counter = createCounter();
 
-        while (xpBeforeAlch == getMagicXp() || HIGH_LEVEL_ALCHEMY.isSelected()) {
+        do {
             log.info("Trying to alch");
             log.info(counter.increase());
 
-            delayUntil(this::isPlayerIdle);
-
-            delay(256, 367);
             if (!HIGH_LEVEL_ALCHEMY.isSelected()) {
                 log.info("Selecting high alch");
                 HIGH_LEVEL_ALCHEMY.activate();
             }
 
-            delay(552, 678);
+            delay(256, 367);
+
             if (HIGH_LEVEL_ALCHEMY.isSelected()) {
                 delayUntil(() -> InterfaceWindows.getInventory().isOpen(), 456, 566);
                 if (InterfaceWindows.getInventory().isOpen()) {
@@ -139,11 +136,7 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
                     if (itemToAlch.get().click()) return;
                 }
             }
-        }
-    }
-
-    private boolean isPlayerIdle() {
-        return getLocal() != null && (getLocal().getAnimationId() == -1 || getLocal().getAnimationId() == 1156);
+        } while (delay(552, 678) && (xpBeforeAlch == getMagicXp() || HIGH_LEVEL_ALCHEMY.isSelected()));
     }
 
     private List<Npc> getNpcsWhoAttackPlayer() {
