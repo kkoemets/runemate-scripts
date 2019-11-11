@@ -1,8 +1,11 @@
 package com.kkoemets.scripts;
 
+import com.kkoemets.api.common.FailSafeCounter;
 import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.Player;
-import com.runemate.game.api.hybrid.input.Mouse;
+import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
+import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
+import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.Npcs;
 import com.runemate.game.api.script.framework.LoopingBot;
@@ -13,14 +16,14 @@ import com.runemate.game.api.script.framework.logger.BotLogger;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kkoemets.api.common.FailSafeCounter.createCounter;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
-import static com.runemate.game.api.hybrid.input.Mouse.Button.LEFT;
+import static com.runemate.game.api.hybrid.local.Skill.MAGIC;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
 import static com.runemate.game.api.osrs.local.hud.interfaces.Magic.HIGH_LEVEL_ALCHEMY;
 import static com.runemate.game.api.osrs.local.hud.interfaces.Magic.STUN;
 import static com.runemate.game.api.script.Execution.delay;
 import static com.runemate.game.api.script.Execution.delayUntil;
-import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -51,8 +54,6 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
 
     @Override
     public void onLoop() {
-        log.info(format("Script-{0}", "Stun alcher"));
-
         Optional<Player> player = ofNullable(getLocal());
         if (!player.isPresent()) {
             log.info("Player is not visible yet, waiting...");
@@ -60,25 +61,15 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
         }
         log.info("Animation id-" + getLocal().getAnimationId());
 
-        if (!getNpcsWhoAttackPlayer().isEmpty()) {
-            log.info("Player is under attack!");
-            actOnState(DO_STUN);
-
-            if (!STUN.isSelected()) {
-                actOnState(DO_ALCH);
-            }
+        if (getNpcsWhoAttackPlayer().isEmpty()) {
+            log.info("Please attack a target!");
         }
 
-    }
-
-    private boolean isPlayerIdle() {
-        return getLocal().getAnimationId() == -1 || getLocal().getAnimationId() == 1156;
-    }
-
-    private List<Npc> getNpcsWhoAttackPlayer() {
-        LocatableEntityQueryResults<Npc> npcs = Npcs.newQuery().reachable().results();
-        return npcs.isEmpty() ? emptyList() : npcs.stream().filter(npc -> npc.getTarget() != null &&
-                npc.getTarget().equals(getLocal())).collect(toList());
+        log.info("Player is under attack!");
+        actOnState(DO_STUN);
+        if (!STUN.isSelected()) {
+            actOnState(DO_ALCH);
+        }
     }
 
     private void actOnState(String state) {
@@ -88,50 +79,81 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
                 log.info("Player is idle");
                 break;
             case DO_STUN:
-                log.info("Trying to stun");
-
-                if (!isPlayerIdle()) {
-                    log.info("Player is not idle");
-                    return;
-                }
-
-                List<Npc> npcsWhoAttackPlayer = getNpcsWhoAttackPlayer();
-                if (npcsWhoAttackPlayer.isEmpty()) {
-                    log.warn("Tried to cast a spell but was not interacting with anyone");
-                    return;
-                }
-
-                while (!STUN.isSelected()) {
-                    delayUntil(() -> STUN.isSelected() || (STUN.activate() && delay(92, 164)));
-                }
-
-                while (STUN.isSelected() && delay(345, 466)) {
-                    log.info("Boom! Shooting stun!");
-                    getNpcsWhoAttackPlayer().get(0).click();
-                }
-
+                stun();
                 break;
             case DO_ALCH:
-                log.info("Trying to alch");
-                delayUntil(this::isPlayerIdle);
-
-                while (!HIGH_LEVEL_ALCHEMY.isSelected()) {
-                    delay(123, 242);
-                    HIGH_LEVEL_ALCHEMY.activate();
-                }
-
-                delayUntil(() -> delay(333, 373) &&
-                        isPlayerIdle());
-
-                while (HIGH_LEVEL_ALCHEMY.isSelected()) {
-                    delay(245, 366);
-                    log.info("Boom! Alching!");
-                    Mouse.click(LEFT);
-                }
-
+                alch();
                 break;
             default:
                 log.warn("Unknown state-" + state);
         }
     }
+
+    private void stun() {
+        log.info("Trying to stun");
+
+        int xpBeforeStun = getMagicXp();
+        FailSafeCounter counter = createCounter();
+
+        while (xpBeforeStun == getMagicXp() || STUN.isSelected()) {
+            log.info(counter.increase());
+            List<Npc> npcsWhoAttackPlayer = getNpcsWhoAttackPlayer();
+            if (npcsWhoAttackPlayer.isEmpty()) {
+                log.warn("Tried to cast a spell but was not interacting with anyone");
+                return;
+            }
+
+            while (!STUN.isSelected()) {
+                delayUntil(() -> STUN.isSelected() || (STUN.activate() && delay(92, 164)));
+            }
+
+            log.info("Boom! Shooting stun!");
+            if (getNpcsWhoAttackPlayer().get(0).click()) return;
+        }
+
+    }
+
+    private void alch() {
+        int xpBeforeAlch = getMagicXp();
+        FailSafeCounter counter = createCounter();
+
+        while (xpBeforeAlch == getMagicXp() || HIGH_LEVEL_ALCHEMY.isSelected()) {
+            log.info("Trying to alch");
+            log.info(counter.increase());
+
+            delayUntil(this::isPlayerIdle);
+
+            delay(256, 367);
+            if (!HIGH_LEVEL_ALCHEMY.isSelected()) {
+                log.info("Selecting high alch");
+                HIGH_LEVEL_ALCHEMY.activate();
+            }
+
+            delay(552, 678);
+            if (HIGH_LEVEL_ALCHEMY.isSelected()) {
+                delayUntil(() -> InterfaceWindows.getInventory().isOpen(), 456, 566);
+                if (InterfaceWindows.getInventory().isOpen()) {
+                    log.info("Clicking on inventory item to high alch");
+                    Optional<SpriteItem> itemToAlch = ofNullable(Inventory.getItems("Yew longbow").first());
+                    if (!itemToAlch.isPresent()) throw new IllegalArgumentException("Where are your bows?");
+                    if (itemToAlch.get().click()) return;
+                }
+            }
+        }
+    }
+
+    private boolean isPlayerIdle() {
+        return getLocal() != null && (getLocal().getAnimationId() == -1 || getLocal().getAnimationId() == 1156);
+    }
+
+    private List<Npc> getNpcsWhoAttackPlayer() {
+        LocatableEntityQueryResults<Npc> npcs = Npcs.newQuery().reachable().results();
+        return npcs.isEmpty() ? emptyList() : npcs.stream().filter(npc -> npc.getTarget() != null &&
+                npc.getTarget().equals(getLocal())).collect(toList());
+    }
+
+    private int getMagicXp() {
+        return MAGIC.getExperience();
+    }
+
 }
