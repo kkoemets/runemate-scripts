@@ -102,12 +102,13 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
                 return;
             }
 
-            while (!STUN.isSelected()) {
-                delayUntil(() -> STUN.isSelected() || (STUN.activate() && delay(92, 164)));
+            if (!STUN.isSelected()) {
+                STUN.activate();
             }
 
-            log.info("Boom! Shooting stun!");
             if (getNpcsWhoAttackPlayer().get(0).click()) return;
+            log.info("Boom! Shooting stun!");
+
         } while (delay(223, 245) && (xpBeforeStun == getMagicXp() || STUN.isSelected()));
 
     }
