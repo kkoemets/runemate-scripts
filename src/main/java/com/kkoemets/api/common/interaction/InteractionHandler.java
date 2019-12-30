@@ -17,14 +17,15 @@ public class InteractionHandler {
         this.log = log;
     }
 
-    public void turnCameraIfNecessaryAndInteract(Npc npc, Player player, String action) {
+    public boolean turnCameraIfNecessaryAndInteract(Npc npc, Player player, String action) {
         if (!npc.isVisible()) {
             mouseWheelTurnTo(npc.getPosition(), player);
         }
         delay(REACTION_TIME.getAsInteger());
-        accurateInteract(npc, action);
+        return accurateInteract(npc, action);
     }
+
     public void turnCameraToCoordinate(Coordinate coordinate, Player player) {
-            mouseWheelTurnTo(coordinate, player);
+        mouseWheelTurnTo(coordinate, player);
     }
 }

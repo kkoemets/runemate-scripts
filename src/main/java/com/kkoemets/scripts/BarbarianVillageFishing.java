@@ -1,13 +1,8 @@
 package com.kkoemets.scripts;
 
-import com.kkoemets.api.common.interaction.AfkContainer;
 import com.kkoemets.api.common.interaction.InteractionHandler;
-import com.kkoemets.api.common.inventory.InventoryHandler;
-import com.kkoemets.api.common.npc.NpcHandler;
 import com.kkoemets.api.common.player.PlayerHandler;
-import com.runemate.game.api.hybrid.entities.Npc;
-import com.runemate.game.api.hybrid.entities.Player;
-import com.runemate.game.api.hybrid.local.Camera;
+import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.framework.LoopingBot;
@@ -15,27 +10,24 @@ import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
 import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
-import java.util.Optional;
-
+import static com.kkoemets.api.common.inventory.ShiftDropper.dropAll;
 import static com.kkoemets.playersense.CustomPlayerSense.Key.ACTIVENESS_FACTOR_WHILE_WAITING;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
+import static com.kkoemets.scripts.BarbarianVillageFishing.Action.*;
 import static com.runemate.game.api.hybrid.local.Camera.setZoom;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
-import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.isFull;
+import static com.runemate.game.api.hybrid.region.Npcs.newQuery;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
 import static com.runemate.game.api.script.Execution.delay;
-import static java.util.Optional.ofNullable;
+import static java.lang.String.format;
 
 public class BarbarianVillageFishing extends LoopingBot implements MoneyPouchListener {
 
     private final String ROD_FISHING_SPOT = "Rod Fishing spot";
     private String aSetting;
     private BotLogger log;
-    private InventoryHandler inventoryHandler;
     private InteractionHandler interactionHandler;
     private PlayerHandler playerHandler;
-    private NpcHandler npcHandler;
-    private AfkContainer afkContainer;
 
     // Required to tell the client that the bot is EmbeddableUI compatible. Remember, that a bot's main class must have a public no-args constructor, which every Object has by default.
     public BarbarianVillageFishing() {
@@ -52,11 +44,8 @@ public class BarbarianVillageFishing extends LoopingBot implements MoneyPouchLis
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
 
-        inventoryHandler = new InventoryHandler(log);
         interactionHandler = new InteractionHandler(log);
         playerHandler = new PlayerHandler(log);
-        npcHandler = new NpcHandler(log);
-        afkContainer = new AfkContainer(log);
         setZoom(0.027, 0.004);
     }
 
@@ -67,44 +56,78 @@ public class BarbarianVillageFishing extends LoopingBot implements MoneyPouchLis
 
     @Override
     public void onLoop() {
-        Optional<Npc> rodFishingSpot =
-                ofNullable(npcHandler.getNpcsSortedByDistance(ROD_FISHING_SPOT).get(0));
-        Optional<Player> player = ofNullable(getLocal());
+        Action action = getAction();
 
-        if (isInventoryFull(player)) {
-            if (Random.nextDouble(0, 1) < 0.15) {
-                delay(afkContainer.getMediumAfkTime());
-            }
-            dropFish();
-        } else if (isPlayerAbleToLureFish(rodFishingSpot, player)) {
-            interactionHandler.turnCameraIfNecessaryAndInteract(rodFishingSpot.get(), player.get(),
-                    "Lure");
-            delay(4500);
+        Boolean actionResult = handleAction(action);
+
+        log.debug(format("Action was %s, result was %s", action, actionResult));
+    }
+
+    private Boolean handleAction(Action action) {
+        if (action == DROP_ALL_FISH) {
+            return dropFish();
         }
 
-        log.debug(Camera.getZoom());
+        if (action == IDLE) {
+            return delay(234, 545);
+        }
+
+        if (action == CATCH_FISH) {
+            return catchFish();
+        }
+
+        return null;
     }
 
-    private boolean isInventoryFull(Optional<Player> player) {
-        return isFull() && player.isPresent();
+    private Action getAction() {
+        if (Inventory.isFull()) {
+            return DROP_ALL_FISH;
+        }
+
+        if (!playerIsIdle()) {
+            return IDLE;
+        }
+
+        if (playerIsIdle() && !newQuery().names(ROD_FISHING_SPOT).results().isEmpty()) {
+            return CATCH_FISH;
+        }
+
+        return null;
     }
 
-    private boolean isPlayerAbleToLureFish(Optional<Npc> rodFishingSpot, Optional<Player> player) {
-        return player.isPresent() && playerHandler.isPlayerIdle(player.get())
-                && rodFishingSpot.isPresent();
+
+    private boolean catchFish() {
+        return interactionHandler
+                .turnCameraIfNecessaryAndInteract(newQuery()
+                        .names(ROD_FISHING_SPOT).results().nearest(), getLocal(), "Lure") && delay(4500);
     }
 
-    private void dropFish() {
+
+    private boolean playerIsIdle() {
+        return playerHandler.isPlayerIdle(getLocal());
+    }
+
+    private boolean dropFish() {
+        if (Random.nextDouble(0, 1) < 0.15) {
+            delay(24657, 34813);
+        }
+
         log.debug("Inventory is full");
-        inventoryHandler.shiftDropAllItems(getTroutsAndSalmons());
-        SpriteItemQueryResults fishes;
-        while (!(fishes = getTroutsAndSalmons().shuffle()).isEmpty()) {
-            inventoryHandler.shiftDropAllItems(fishes);
+        while (!getTroutsAndSalmons().isEmpty()) {
+            dropAll(getTroutsAndSalmons());
         }
+
+        return true;
     }
 
     private SpriteItemQueryResults getTroutsAndSalmons() {
         return getItems("Raw salmon", "Raw trout");
+    }
+
+    enum Action {
+        DROP_ALL_FISH,
+        CATCH_FISH,
+        IDLE
     }
 
 }
