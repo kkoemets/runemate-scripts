@@ -6,6 +6,7 @@ import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.Npcs;
+import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.framework.LoopingBot;
 import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
 import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
@@ -72,12 +73,23 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
             restTime = getRestTime();
         }
 
+        if (getAnIntFromZeroToOneThousand() < 24) {
+            delay(764, 4492);
+        }
+
         handleAction(Action.STUN);
         if (!STUN.isSelected()) {
+            if (getAnIntFromZeroToOneThousand() < 19) {
+                delay(964, 5092);
+            }
             handleAction(Action.ALCH);
         }
 
         log.info("Loop end");
+    }
+
+    private int getAnIntFromZeroToOneThousand() {
+        return Random.nextInt(0, 1000);
     }
 
     private Boolean handleAction(Action action) {
@@ -87,10 +99,6 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
 
         if (action == Action.STUN) {
             return stun(getMagicXp());
-        }
-
-        if (action == Action.IDLE) {
-            return delay(76, 145);
         }
 
         return null;
@@ -145,7 +153,6 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
 
     enum Action {
         STUN,
-        IDLE,
         ALCH
     }
 
