@@ -91,12 +91,7 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
             return stun(magicXp);
         }
 
-        if (!getNpcsWhoAttackPlayer().get(0).click()) {
-            return stun(magicXp);
-        }
-
-        delay(145, 234);
-        return stun(magicXp);
+       return getNpcsWhoAttackPlayer().get(0).click() && delay(642, 857) || stun(magicXp);
     }
 
     private boolean alch(int magicXp) {
@@ -116,8 +111,7 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
             return alch(magicXp);
         }
 
-        delay(167, 284);
-
+        delay(452, 587);
         return alch(magicXp);
     }
 
