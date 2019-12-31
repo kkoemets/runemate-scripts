@@ -12,7 +12,6 @@ import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import static com.kkoemets.api.common.inventory.ShiftDropper.dropAll;
 import static com.kkoemets.playersense.CustomPlayerSense.Key.ACTIVENESS_FACTOR_WHILE_WAITING;
-import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.kkoemets.scripts.BarbarianVillageFishing.Action.*;
 import static com.runemate.game.api.hybrid.local.Camera.setZoom;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
@@ -35,7 +34,7 @@ public class BarbarianVillageFishing extends LoopingBot implements MoneyPouchLis
 
     @Override
     public void onStart(String... args) {
-        initializeKeys();
+//        initializeKeys();
         // Submit your MoneyPouchListener
         getEventDispatcher().addListener(this);
         // Sets the length of time in milliseconds to wait before calling onLoop again
@@ -60,7 +59,12 @@ public class BarbarianVillageFishing extends LoopingBot implements MoneyPouchLis
 
         Boolean actionResult = handleAction(action);
 
-        log.debug(format("Action was %s, result was %s", action, actionResult));
+        if (actionResult) {
+            log.debug(format("Action was %s, result was %s", action, actionResult));
+
+        } else {
+            log.warn(format("Action was %s, result was %s", action, actionResult));
+        }
     }
 
     private Boolean handleAction(Action action) {
@@ -95,19 +99,20 @@ public class BarbarianVillageFishing extends LoopingBot implements MoneyPouchLis
         return null;
     }
 
-
     private boolean catchFish() {
+        log.info("Starting to catch fish");
         return interactionHandler
                 .turnCameraIfNecessaryAndInteract(newQuery()
-                        .names(ROD_FISHING_SPOT).results().nearest(), getLocal(), "Lure") && delay(4500);
+                        .names(ROD_FISHING_SPOT).results().nearest(), getLocal(), "Lure") && delay(4500)
+                || catchFish();
     }
-
 
     private boolean playerIsIdle() {
         return playerHandler.isPlayerIdle(getLocal());
     }
 
     private boolean dropFish() {
+        log.info("Starting to drop fish");
         if (Random.nextDouble(0, 1) < 0.15) {
             delay(24657, 34813);
         }
