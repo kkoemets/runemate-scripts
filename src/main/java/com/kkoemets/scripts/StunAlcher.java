@@ -17,9 +17,11 @@ import java.util.Optional;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.runemate.game.api.hybrid.local.Skill.MAGIC;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
+import static com.runemate.game.api.hybrid.util.calculations.Random.nextLong;
 import static com.runemate.game.api.osrs.local.hud.interfaces.Magic.HIGH_LEVEL_ALCHEMY;
 import static com.runemate.game.api.osrs.local.hud.interfaces.Magic.STUN;
 import static com.runemate.game.api.script.Execution.delay;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -27,6 +29,7 @@ import static java.util.stream.Collectors.toList;
 public class StunAlcher extends LoopingBot implements MoneyPouchListener {
     private String aSetting;
     private BotLogger log;
+    private long restTime;
 
     @Override
     public void onStart(String... args) {
@@ -38,6 +41,11 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
         // Load script configuration
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
+        restTime = getRestTime();
+    }
+
+    private long getRestTime() {
+        return currentTimeMillis() + nextLong(minutesToMillis(12.4), minutesToMillis(22.5));
     }
 
     @Override
@@ -56,6 +64,12 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
         if (getNpcsWhoAttackPlayer().isEmpty()) {
             log.info("Please attack a target!");
             return;
+        }
+
+        if (currentTimeMillis() > restTime) {
+            log.info("Rest time threshold, sleeping for a moment");
+            delay(34565, 74553);
+            restTime = getRestTime();
         }
 
         handleAction(Action.STUN);
@@ -123,6 +137,10 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
 
     private int getMagicXp() {
         return MAGIC.getExperience();
+    }
+
+    private long minutesToMillis(double minutes) {
+        return (long) (minutes * 60 * 1000);
     }
 
     enum Action {
