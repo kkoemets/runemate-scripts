@@ -4,7 +4,6 @@ import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
-import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.Npcs;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.framework.LoopingBot;
@@ -23,7 +22,6 @@ import static com.runemate.game.api.osrs.local.hud.interfaces.Magic.HIGH_LEVEL_A
 import static com.runemate.game.api.osrs.local.hud.interfaces.Magic.STUN;
 import static com.runemate.game.api.script.Execution.delay;
 import static java.lang.System.currentTimeMillis;
-import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
@@ -113,7 +111,7 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
             return stun(magicXp);
         }
 
-       return getNpcsWhoAttackPlayer().get(0).click() && delay(642, 857) || stun(magicXp);
+       return getNpcsWhoAttackPlayer().get(0).click() && delay(442, 657) || stun(magicXp);
     }
 
     private boolean alch(int magicXp) {
@@ -134,13 +132,14 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
             return alch(magicXp);
         }
 
-        return Inventory.getItems("Yew longbow").first().click() && delay(452, 587) || alch(magicXp);
+        return Inventory.getItems("Yew longbow").first().click() && delay(252, 387) || alch(magicXp);
     }
 
     private List<Npc> getNpcsWhoAttackPlayer() {
-        LocatableEntityQueryResults<Npc> npcs = Npcs.newQuery().reachable().results();
-        return npcs.isEmpty() ? emptyList() : npcs.stream()
-                .filter(npc -> npc.getTarget() != null && npc.getTarget().equals(getLocal())).collect(toList());
+        return Npcs.newQuery().reachable().results().stream().filter(
+                npc -> npc.getTarget() != null && npc.getTarget().equals(getLocal()) &&
+                        npc.getDefinition() != null && npc.getDefinition().getActions().contains("Attack"))
+                .collect(toList());
     }
 
     private int getMagicXp() {
