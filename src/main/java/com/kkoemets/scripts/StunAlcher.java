@@ -107,12 +107,12 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
             return true;
         }
 
-        if (STUN.getSpriteIdWhenUnavailable() == STUN.getComponent().getSpriteId()) {
-            throw new IllegalStateException("Cannot cast stun!");
-        }
-
         if (!STUN.isSelected() && !STUN.activate()) {
             return stun(magicXp);
+        }
+
+        if (STUN.getSpriteIdWhenUnavailable() == STUN.getComponent().getSpriteId()) {
+            throw new IllegalStateException("Cannot cast stun!");
         }
 
         return getNpcsWhoAttackPlayer().get(0).click() && delay(442, 657) || stun(magicXp);
@@ -123,24 +123,29 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
             return true;
         }
 
-        if (HIGH_LEVEL_ALCHEMY.getSpriteIdWhenUnavailable() == HIGH_LEVEL_ALCHEMY.getComponent().getSpriteId()) {
-            throw new IllegalStateException("Cannot cast high alchemy!");
-        }
 
         if (HIGH_LEVEL_ALCHEMY.isSelected() && !InterfaceWindows.getInventory().isOpen() &&
                 HIGH_LEVEL_ALCHEMY.deactivate()) {
             return alch(magicXp);
         }
 
-        if (!HIGH_LEVEL_ALCHEMY.isSelected() && !HIGH_LEVEL_ALCHEMY.activate()) {
-            return alch(magicXp);
+        if (!HIGH_LEVEL_ALCHEMY.isSelected()) {
+            HIGH_LEVEL_ALCHEMY.getComponent().hover();
+
+            if (HIGH_LEVEL_ALCHEMY.getSpriteIdWhenUnavailable() == HIGH_LEVEL_ALCHEMY.getComponent().getSpriteId()) {
+                throw new IllegalStateException("Cannot cast high alchemy!");
+            }
+
+            if (!HIGH_LEVEL_ALCHEMY.activate()) {
+                return alch(magicXp);
+            }
         }
 
         if (!InterfaceWindows.getInventory().isOpen()) {
             return alch(magicXp);
         }
 
-        return Inventory.getItems("Yew longbow").first().click() && delay(252, 387) || alch(magicXp);
+        return Inventory.getItems("Yew longbow").first().click() && delay(452, 587) || alch(magicXp);
     }
 
     private List<Npc> getNpcsWhoAttackPlayer() {
