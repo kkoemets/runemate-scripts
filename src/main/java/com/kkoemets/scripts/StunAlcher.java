@@ -123,7 +123,6 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
             return true;
         }
 
-
         if (HIGH_LEVEL_ALCHEMY.isSelected() && !InterfaceWindows.getInventory().isOpen() &&
                 HIGH_LEVEL_ALCHEMY.deactivate()) {
             return alch(magicXp);
@@ -145,7 +144,7 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
             return alch(magicXp);
         }
 
-        return Inventory.getItems("Yew longbow").first().click() && delay(452, 587) || alch(magicXp);
+        return Inventory.getItems("Yew longbow").first().click() && delay(612, 699) || alch(magicXp);
     }
 
     private List<Npc> getNpcsWhoAttackPlayer() {
