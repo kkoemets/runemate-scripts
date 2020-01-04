@@ -67,7 +67,7 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
 
         if (currentTimeMillis() > restTime) {
             log.info("Rest time threshold, sleeping for a moment");
-            delay(34565, 74553);
+            delay(24565, 74553);
             restTime = getRestTime();
         }
 
@@ -107,16 +107,24 @@ public class StunAlcher extends LoopingBot implements MoneyPouchListener {
             return true;
         }
 
+        if (STUN.getSpriteIdWhenUnavailable() == STUN.getComponent().getSpriteId()) {
+            throw new IllegalStateException("Cannot cast stun!");
+        }
+
         if (!STUN.isSelected() && !STUN.activate()) {
             return stun(magicXp);
         }
 
-       return getNpcsWhoAttackPlayer().get(0).click() && delay(442, 657) || stun(magicXp);
+        return getNpcsWhoAttackPlayer().get(0).click() && delay(442, 657) || stun(magicXp);
     }
 
     private boolean alch(int magicXp) {
         if (magicXp != getMagicXp()) {
             return true;
+        }
+
+        if (HIGH_LEVEL_ALCHEMY.getSpriteIdWhenUnavailable() == HIGH_LEVEL_ALCHEMY.getComponent().getSpriteId()) {
+            throw new IllegalStateException("Cannot cast high alchemy!");
         }
 
         if (HIGH_LEVEL_ALCHEMY.isSelected() && !InterfaceWindows.getInventory().isOpen() &&
