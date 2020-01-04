@@ -1,7 +1,6 @@
 package com.kkoemets.scripts.blastfurnace;
 
 import com.kkoemets.api.common.interaction.InteractionHandler;
-import com.kkoemets.scripts.blastfurnace.util.varbit.VarbitLogger;
 import com.runemate.game.api.hybrid.local.Varbits;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.framework.LoopingBot;
@@ -9,12 +8,9 @@ import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
 import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
-import java.util.HashSet;
-
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.kkoemets.scripts.blastfurnace.banking.BlastFurnaceBanking.goToBank;
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 
 public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 
@@ -64,11 +60,6 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 //        if (!script()) {
 ////            throw new IllegalStateException("Script return false");
 //        }
-
-        VarbitLogger.logChangedVarbits(getLogger(), new HashSet<>(asList(5357)));
-        log.info("loop end");
-
-
     }
 
     public boolean script() {

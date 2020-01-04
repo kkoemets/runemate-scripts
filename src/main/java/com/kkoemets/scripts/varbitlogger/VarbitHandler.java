@@ -1,4 +1,4 @@
-package com.kkoemets.scripts.blastfurnace.util.varbit;
+package com.kkoemets.scripts.varbitlogger;
 
 import com.runemate.game.api.hybrid.local.Varbit;
 
@@ -8,7 +8,7 @@ import java.util.Set;
 import static com.runemate.game.api.hybrid.local.Varbits.loadAll;
 import static java.util.stream.Collectors.toMap;
 
-public class VarbitHandler {
+class VarbitHandler {
 
     public static Map<Integer, Integer> getVarbits() {
         return loadAll().stream().collect(toMap(Varbit::getId, Varbit::getValue));
