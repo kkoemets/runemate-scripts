@@ -1,5 +1,5 @@
 <manifest>
-    <main-class>com.kkoemets.scripts.BlastFurnace</main-class>
+    <main-class>com.kkoemets.scripts.blastfurnace.BlastFurnace</main-class>
     <name>BlastFurnace</name>
     <tag-line>Test bot</tag-line><!--Max of 50 chars-->
     <description>Test</description><!--Max of 110 chars-->
