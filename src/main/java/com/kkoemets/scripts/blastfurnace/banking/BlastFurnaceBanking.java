@@ -1,54 +1,61 @@
 package com.kkoemets.scripts.blastfurnace.banking;
 
-import com.runemate.game.api.hybrid.location.Coordinate;
+import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
+import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
-import static com.runemate.game.api.hybrid.location.Area.Polygonal;
-import static com.runemate.game.api.hybrid.location.Area.polygonal;
+import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.*;
+import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.isFull;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
 import static com.runemate.game.api.script.Execution.delay;
 
 public class BlastFurnaceBanking {
-    private static final Coordinate BANKING_TILE = new Coordinate(1948, 4957, 0);
-    private static final Polygonal areNearBank = getPolygonal(BANKING_TILE, 5);
 
     private BlastFurnaceBanking() {
     }
 
-    public static boolean goToBank(BotLogger log) {
-        if (getLocal().getAnimationId() != -1) {
-            log.debug("Walking to bank...");
-            return goToBank(log);
-        }
-
-        if (isAtBankLocation()) {
-            log.debug("Player is near bank!");
+    public static boolean openBank(BotLogger log) {
+        if (isOpen()) {
+            log.debug("Bank interface is open");
             return true;
         }
 
-        boolean isClickOnBankAreaSuccess = areNearBank.click();
-        if (!isClickOnBankAreaSuccess) {
-            return goToBank(log);
+        if (getLocal().isMoving()) {
+            log.debug("Walking to bank...");
+            delay(2300, 2600);
+            return openBank(log);
         }
 
-        delay(1563, 2345);
-        return goToBank(log);
+        if (!isOpen() && !GameObjects.newQuery().names("Bank chest").results().get(0).click()) {
+            return openBank(log);
+        }
+
+        log.debug("Clicked on bank chest");
+        delay(2300, 2600);
+
+        return openBank(log);
     }
 
-    private static boolean isAtBankLocation() {
-        return areNearBank.contains(getLocal().getPosition());
-    }
+    public static boolean bankGoldBarsAndWithdrawGoldOre(BotLogger log) {
+        if (!isOpen()) {
+            return false;
+        }
 
-    private static Polygonal getPolygonal(Coordinate coordinate, int distanceFromCenter) {
-        return polygonal(
-                new Coordinate(coordinate.getX() - distanceFromCenter,
-                        coordinate.getY() - distanceFromCenter, 0),
-                new Coordinate(coordinate.getX() - distanceFromCenter,
-                        coordinate.getY() + distanceFromCenter, 0),
-                new Coordinate(coordinate.getX() + distanceFromCenter,
-                        coordinate.getY() + distanceFromCenter, 0),
-                new Coordinate(coordinate.getX() + distanceFromCenter,
-                        coordinate.getY() - distanceFromCenter, 0));
+        if (!Inventory.getItems("Gold ore").isEmpty() && Inventory.getItems("Gold bar").isEmpty()) {
+            log.debug("Successfully banked gold bars and took gold ore");
+            return true;
+        }
+
+        if (!Inventory.getItems("Gold bar").isEmpty() &&
+                !depositAllExcept("Gold ore", "Ice gloves", "Goldsmith gauntlets", "Coins")) {
+            return bankGoldBarsAndWithdrawGoldOre(log);
+        }
+
+        if (!isFull()) {
+            withdraw("Gold ore", 99);
+        }
+
+        return bankGoldBarsAndWithdrawGoldOre(log);
     }
 
 }

@@ -1,7 +1,8 @@
 package com.kkoemets.scripts.blastfurnace;
 
 import com.kkoemets.api.common.interaction.InteractionHandler;
-import com.runemate.game.api.hybrid.local.Varbits;
+import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
+import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.framework.LoopingBot;
 import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
@@ -9,13 +10,14 @@ import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
-import static com.kkoemets.scripts.blastfurnace.banking.BlastFurnaceBanking.goToBank;
-import static java.lang.String.format;
+import static com.kkoemets.scripts.blastfurnace.banking.BlastFurnaceBanking.bankGoldBarsAndWithdrawGoldOre;
+import static com.kkoemets.scripts.blastfurnace.banking.BlastFurnaceBanking.openBank;
+import static com.kkoemets.scripts.blastfurnace.conveyor.OreConveyorHandling.putGoldOreIntoConveyor;
+import static com.kkoemets.scripts.blastfurnace.dispenser.BarDispenserHandling.hasBarDispenserGoldBars;
+import static com.kkoemets.scripts.blastfurnace.dispenser.BarDispenserHandling.takeGoldBarsFromBarDispenser;
 
 public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 
-    private BlastFurnaceStateDecider stateDecider;
-    private BlastFurnaceActionHandler actionHandler;
     private String aSetting;
     private BotLogger log;
     private InteractionHandler interactionHandler;
@@ -35,8 +37,6 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
         interactionHandler = new InteractionHandler(log);
-        stateDecider = new BlastFurnaceStateDecider(log);
-        actionHandler = new BlastFurnaceActionHandler(log);
     }
 
     @Override
@@ -46,48 +46,51 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 
     @Override
     public void onLoop() {
-//        BlastFurnaceAction action = stateDecider.decideNextAction();
-//        log.info("Decided next action-" + action);
-//        actionHandler.doAction(action);
-
-//        if (notAtBlastFurnaceArea()) {
-//            throw new IllegalStateException("Not at Blast Furnace area");
-//        }
-
-
-//        log.info("Bars are ready-" + (Varbits.load(955).getValue() == 24));
-//        log.info("Foreman allows to use blast furnace-" + (Varbits.load(8354).getValue() == 1)); // incorrect
-//        if (!script()) {
-////            throw new IllegalStateException("Script return false");
-//        }
+        script();
+//        log.debug(Interfaces.newQuery().actions("Yes").results().size() > 0);
+        log.info("Loop end");
     }
 
     public boolean script() {
-//        if (cameraIsNotSet()) {
+//        i
+//        f (cameraIsNotSet()) {
 //            return setCamera();
 //        }
 
-        if (isCofferEmpty()) {
-            log.info("Coffer is empty, going to bank");
-            return goToBank(log);
+//        if (isCofferEmpty()) {
+//            log.info("Coffer is empty, going to bank");
+//            return goToBank(log);
+//        }
+//
+//        goToBank(log);
+//
+        if (!Bank.isOpen() && !Inventory.getItems("Gold bar").isEmpty()) {
+            return openBank(log);
         }
 
-        goToBank(log);
+        if (Bank.isOpen() && Inventory.getItems("Gold ore").isEmpty()) {
+            log.info("Banking gold bars and withdrawing gold ore");
+            return bankGoldBarsAndWithdrawGoldOre(log);
+        }
+
+//        if (Bank.isOpen() && Varbits.load(RUN_SLOWED_DEPLETION_ACTIVE.getId()).getValue() == 0) {
+//            log.info("Stamina potion is not active, drinking");
+//        }
+
+        if (Bank.isOpen()) {
+            return Bank.close();
+        }
+
+        if (!Inventory.getItems("Gold ore").isEmpty()) {
+            return putGoldOreIntoConveyor(log);
+        }
+
+        if (hasBarDispenserGoldBars()) { //todo!!! if there is like 50 bars, how to handle?
+            log.info("Dispenser has gold bars, taking them");
+            return takeGoldBarsFromBarDispenser(log);
+        }
 
         return true;
     }
-
-    private boolean isCofferEmpty() {
-        int cofferVarBit = 5357;
-        int amountOfGold = Varbits.load(cofferVarBit).getValue();
-        boolean isEmpty = amountOfGold < 0;
-        if (isEmpty) {
-            log.debug("Coffer is empty!");
-            return true;
-        }
-        log.debug(format("Coffer has enough gold-%s gp", amountOfGold));
-        return false;
-    }
-
 
 }
