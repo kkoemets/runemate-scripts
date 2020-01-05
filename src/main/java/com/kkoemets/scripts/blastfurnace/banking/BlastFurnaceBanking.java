@@ -1,5 +1,6 @@
 package com.kkoemets.scripts.blastfurnace.banking;
 
+import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.script.framework.logger.BotLogger;
@@ -85,6 +86,10 @@ public class BlastFurnaceBanking {
 
     public static boolean isInventoryContainsGoldBars() {
         return !Inventory.getItems(GOLD_BAR).isEmpty();
+    }
+
+    public static boolean closeBank() {
+        return Bank.close() || closeBank();
     }
 
     public static boolean isGoldOresInInventory() {

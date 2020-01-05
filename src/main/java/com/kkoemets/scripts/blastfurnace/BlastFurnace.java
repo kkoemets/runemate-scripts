@@ -97,7 +97,7 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 
         if (Bank.isOpen() && !isGoldOresInInventory()) {
             log.info("Banking gold bars and withdrawing gold ore");
-            return withdrawGoldOresFromOpenedBank(log) && Bank.close();
+            return withdrawGoldOresFromOpenedBank(log) && closeBank();
         }
 
         if (!Inventory.getItems(GOLD_ORE).isEmpty()) {
