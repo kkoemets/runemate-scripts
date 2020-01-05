@@ -10,11 +10,12 @@ import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
-import static com.kkoemets.scripts.blastfurnace.banking.BlastFurnaceBanking.bankGoldBarsAndWithdrawGoldOre;
-import static com.kkoemets.scripts.blastfurnace.banking.BlastFurnaceBanking.openBank;
+import static com.kkoemets.scripts.blastfurnace.banking.BlastFurnaceBanking.*;
 import static com.kkoemets.scripts.blastfurnace.conveyor.OreConveyorHandling.putGoldOreIntoConveyor;
 import static com.kkoemets.scripts.blastfurnace.dispenser.BarDispenserHandling.hasBarDispenserGoldBars;
 import static com.kkoemets.scripts.blastfurnace.dispenser.BarDispenserHandling.takeGoldBarsFromBarDispenser;
+import static com.kkoemets.scripts.blastfurnace.stamina.StaminaDrinking.hasStaminaExpired;
+import static com.kkoemets.scripts.blastfurnace.stamina.StaminaDrinking.takeStaminaFromOpenedBankAndCloseBankAndDrink;
 
 public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 
@@ -22,7 +23,6 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
     private BotLogger log;
     private InteractionHandler interactionHandler;
 
-    // Required to tell the client that the bot is EmbeddableUI compatible. Remember, that a bot's main class must have a public no-args constructor, which every Object has by default.
     public BlastFurnace() {
     }
 
@@ -47,7 +47,6 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
     @Override
     public void onLoop() {
         script();
-//        log.debug(Interfaces.newQuery().actions("Yes").results().size() > 0);
         log.info("Loop end");
     }
 
@@ -64,21 +63,21 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 //
 //        goToBank(log);
 //
-        if (!Bank.isOpen() && !Inventory.getItems("Gold bar").isEmpty()) {
+        if (!Bank.isOpen() && isInventoryContainsGoldBars()) {
             return openBank(log);
         }
 
-        if (Bank.isOpen() && Inventory.getItems("Gold ore").isEmpty()) {
-            log.info("Banking gold bars and withdrawing gold ore");
-            return bankGoldBarsAndWithdrawGoldOre(log);
+        if (Bank.isOpen() && isInventoryContainsGoldBars()) {
+            return depositGoldBarsToOpenedBank(log);
         }
 
-//        if (Bank.isOpen() && Varbits.load(RUN_SLOWED_DEPLETION_ACTIVE.getId()).getValue() == 0) {
-//            log.info("Stamina potion is not active, drinking");
-//        }
+        if (Bank.isOpen() && hasStaminaExpired()) {
+            return takeStaminaFromOpenedBankAndCloseBankAndDrink() && openBank(log);
+        }
 
-        if (Bank.isOpen()) {
-            return Bank.close();
+        if (Bank.isOpen() && !isGoldOresInInventory()) {
+            log.info("Banking gold bars and withdrawing gold ore");
+            return withdrawGoldOresFromOpenedBank(log) && Bank.close();
         }
 
         if (!Inventory.getItems("Gold ore").isEmpty()) {

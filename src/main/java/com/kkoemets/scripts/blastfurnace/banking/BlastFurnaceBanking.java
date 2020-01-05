@@ -10,6 +10,8 @@ import static com.runemate.game.api.hybrid.region.Players.getLocal;
 import static com.runemate.game.api.script.Execution.delay;
 
 public class BlastFurnaceBanking {
+    private static final String[] ITEMS_NEEDED_FOR_BLAST_FURNACE =
+            {"Gold ore", "Ice gloves", "Goldsmith gauntlets", "Coins"};
 
     private BlastFurnaceBanking() {
     }
@@ -22,7 +24,7 @@ public class BlastFurnaceBanking {
 
         if (getLocal().isMoving()) {
             log.debug("Walking to bank...");
-            delay(2300, 2600);
+            delay(1300, 1600);
             return openBank(log);
         }
 
@@ -31,31 +33,61 @@ public class BlastFurnaceBanking {
         }
 
         log.debug("Clicked on bank chest");
-        delay(2300, 2600);
+        delay(1300, 1600);
 
         return openBank(log);
     }
 
-    public static boolean bankGoldBarsAndWithdrawGoldOre(BotLogger log) {
+    public static boolean withdrawGoldOresFromOpenedBank(BotLogger log) {
         if (!isOpen()) {
+            log.warn("Tried to take gold bars from bank but bank interface was not opened!");
             return false;
         }
 
-        if (!Inventory.getItems("Gold ore").isEmpty() && Inventory.getItems("Gold bar").isEmpty()) {
-            log.debug("Successfully banked gold bars and took gold ore");
-            return true;
+        depositAllExcept(ITEMS_NEEDED_FOR_BLAST_FURNACE);
+
+        if (isFull() && !isGoldOresInInventory()) {
+            log.warn("Tried to take gold ores but inventory was full!");
+            return depositGoldBarsToOpenedBank(log);
         }
 
-        if (!Inventory.getItems("Gold bar").isEmpty() &&
-                !depositAllExcept("Gold ore", "Ice gloves", "Goldsmith gauntlets", "Coins")) {
-            return bankGoldBarsAndWithdrawGoldOre(log);
+
+        if (isGoldOresInInventory()) {
+            log.debug("Successfully took gold ore");
+            return true;
         }
 
         if (!isFull()) {
             withdraw("Gold ore", 99);
         }
 
-        return bankGoldBarsAndWithdrawGoldOre(log);
+        return withdrawGoldOresFromOpenedBank(log);
+    }
+
+    public static boolean depositGoldBarsToOpenedBank(BotLogger log) {
+        if (!isOpen()) {
+            log.warn("Tried to take gold bars from bank but bank interface was not opened!");
+            return false;
+        }
+
+        if (Inventory.getItems("Gold bar").isEmpty()) {
+            log.debug("Successfully banked gold bars and took gold ore");
+            return true;
+        }
+
+        if (isInventoryContainsGoldBars()) {
+            depositAllExcept(ITEMS_NEEDED_FOR_BLAST_FURNACE);
+        }
+
+        return depositGoldBarsToOpenedBank(log);
+    }
+
+    public static boolean isInventoryContainsGoldBars() {
+        return !Inventory.getItems("Gold bar").isEmpty();
+    }
+
+    public static boolean isGoldOresInInventory() {
+        return !Inventory.getItems("Gold ore").isEmpty();
     }
 
 }

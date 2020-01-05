@@ -36,7 +36,7 @@ public class BarDispenserHandling {
 
         if (getLocal().isMoving()) {
             log.debug("Player is moving...");
-            delay(2300, 2600);
+            delay(200, 300);
             return takeGoldBarsFromBarDispenser(log);
         }
 
@@ -45,7 +45,7 @@ public class BarDispenserHandling {
             if (!pressSpace()) {
                 return takeGoldBarsFromBarDispenser(log);
             }
-            delay(2300, 2600);
+            delay(200, 300);
             return takeGoldBarsFromBarDispenser(log);
         }
 
@@ -54,14 +54,15 @@ public class BarDispenserHandling {
         }
 
         log.debug("Clicked on bar dispenser");
-        delay(2300, 2600);
+        delay(200, 300);
 
         return takeGoldBarsFromBarDispenser(log);
     }
 
 
-    private static boolean clickOnDispenser() {
-        return GameObjects.newQuery().names("Bar dispenser").results().get(0).click();
+    public static boolean clickOnDispenser() {
+        delay(200);
+        return GameObjects.newQuery().names("Bar dispenser").results().get(0).click() || clickOnDispenser();
     }
 
     private static boolean isTakeGoldBarsFromDispenserDialogOpen() {
