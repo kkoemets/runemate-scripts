@@ -54,7 +54,7 @@ public class BarDispenserHandling {
         }
 
         log.debug("Clicked on bar dispenser");
-        delay(200, 300);
+        delay(500, 600);
 
         return takeGoldBarsFromBarDispenser(log);
     }

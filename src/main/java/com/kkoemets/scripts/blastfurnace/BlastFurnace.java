@@ -2,6 +2,7 @@ package com.kkoemets.scripts.blastfurnace;
 
 import com.kkoemets.api.common.interaction.InteractionHandler;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
+import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.framework.LoopingBot;
@@ -11,11 +12,13 @@ import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.kkoemets.scripts.blastfurnace.banking.BlastFurnaceBanking.*;
+import static com.kkoemets.scripts.blastfurnace.coffer.CofferHandling.isCofferEmpty;
 import static com.kkoemets.scripts.blastfurnace.conveyor.OreConveyorHandling.putGoldOreIntoConveyor;
 import static com.kkoemets.scripts.blastfurnace.dispenser.BarDispenserHandling.hasBarDispenserGoldBars;
 import static com.kkoemets.scripts.blastfurnace.dispenser.BarDispenserHandling.takeGoldBarsFromBarDispenser;
 import static com.kkoemets.scripts.blastfurnace.stamina.StaminaDrinking.hasStaminaExpired;
 import static com.kkoemets.scripts.blastfurnace.stamina.StaminaDrinking.takeStaminaFromOpenedBankAndCloseBankAndDrink;
+import static com.runemate.game.api.hybrid.region.Players.getLocal;
 
 public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 
@@ -63,6 +66,22 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 //
 //        goToBank(log);
 //
+        if (getLocal() == null) {
+            log.info("Waiting for player to appear");
+            return true;
+        }
+
+        if (isCofferEmpty(log)) {
+            throw new IllegalStateException("Coffer is empty!");
+        }
+
+        if (Inventory.getItems("Ice gloves").isEmpty() && !Equipment.contains("Ice gloves")) {
+            throw new IllegalStateException("No ice gloves in inv or equipped");
+        }
+        if (Inventory.getItems("Goldsmith gauntlets").isEmpty() && !Equipment.contains("Goldsmith gauntlets")) {
+            throw new IllegalStateException("No goldsmith gauntlets in inv or equipped");
+        }
+
         if (!Bank.isOpen() && isInventoryContainsGoldBars()) {
             return openBank(log);
         }
