@@ -4,6 +4,7 @@ import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
+import static com.kkoemets.scripts.blastfurnace.BlastFurnaceItems.*;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.*;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.isFull;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
@@ -11,7 +12,7 @@ import static com.runemate.game.api.script.Execution.delay;
 
 public class BlastFurnaceBanking {
     private static final String[] ITEMS_NEEDED_FOR_BLAST_FURNACE =
-            {"Gold ore", "Ice gloves", "Goldsmith gauntlets", "Coins"};
+            {GOLD_ORE, ICE_GLOVES, GOLDSMITH_GAUNTLETS, "Coins"};
 
     private BlastFurnaceBanking() {
     }
@@ -58,7 +59,7 @@ public class BlastFurnaceBanking {
         }
 
         if (!isFull()) {
-            withdraw("Gold ore", 99);
+            withdraw(GOLD_ORE, 99);
         }
 
         return withdrawGoldOresFromOpenedBank(log);
@@ -70,7 +71,7 @@ public class BlastFurnaceBanking {
             return false;
         }
 
-        if (Inventory.getItems("Gold bar").isEmpty()) {
+        if (Inventory.getItems(GOLD_BAR).isEmpty()) {
             log.debug("Successfully banked gold bars and took gold ore");
             return true;
         }
@@ -83,11 +84,11 @@ public class BlastFurnaceBanking {
     }
 
     public static boolean isInventoryContainsGoldBars() {
-        return !Inventory.getItems("Gold bar").isEmpty();
+        return !Inventory.getItems(GOLD_BAR).isEmpty();
     }
 
     public static boolean isGoldOresInInventory() {
-        return !Inventory.getItems("Gold ore").isEmpty();
+        return !Inventory.getItems(GOLD_ORE).isEmpty();
     }
 
 }

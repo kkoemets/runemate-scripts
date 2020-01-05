@@ -7,6 +7,7 @@ import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
+import static com.kkoemets.scripts.blastfurnace.BlastFurnaceItems.ICE_GLOVES;
 import static com.runemate.game.api.hybrid.input.Keyboard.pressKey;
 import static com.runemate.game.api.hybrid.input.Keyboard.releaseKey;
 import static com.runemate.game.api.hybrid.local.Varbits.load;
@@ -30,7 +31,7 @@ public class BarDispenserHandling {
             return true;
         }
 
-        if (!Equipment.contains("Ice gloves") && !Inventory.getItems("Ice gloves").get(0).click()) {
+        if (!Equipment.contains(ICE_GLOVES) && !Inventory.getItems(ICE_GLOVES).get(0).click()) {
             return takeGoldBarsFromBarDispenser(log);
         }
 

@@ -2,6 +2,7 @@ package com.kkoemets.scripts.blastfurnace.stamina;
 
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 
+import static com.kkoemets.scripts.blastfurnace.BlastFurnaceItems.GOLD_ORE;
 import static com.kkoemets.scripts.varbitlogger.NamedVarbit.RUN_SLOWED_DEPLETION_ACTIVE;
 import static com.runemate.game.api.hybrid.local.Varbits.load;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Bank.deposit;
@@ -27,7 +28,7 @@ public class StaminaDrinking {
             return true;
         }
 
-        if (isFull() && deposit("Gold ore", 1)) {
+        if (isFull() && deposit(GOLD_ORE, 1)) {
             return takeStaminaFromOpenedBankAndCloseBankAndDrink();
         }
 

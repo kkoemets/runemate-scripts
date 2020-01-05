@@ -11,6 +11,7 @@ import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
+import static com.kkoemets.scripts.blastfurnace.BlastFurnaceItems.*;
 import static com.kkoemets.scripts.blastfurnace.banking.BlastFurnaceBanking.*;
 import static com.kkoemets.scripts.blastfurnace.coffer.CofferHandling.isCofferEmpty;
 import static com.kkoemets.scripts.blastfurnace.conveyor.OreConveyorHandling.putGoldOreIntoConveyor;
@@ -75,10 +76,10 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
             throw new IllegalStateException("Coffer is empty!");
         }
 
-        if (Inventory.getItems("Ice gloves").isEmpty() && !Equipment.contains("Ice gloves")) {
+        if (Inventory.getItems(ICE_GLOVES).isEmpty() && !Equipment.contains("Ice gloves")) {
             throw new IllegalStateException("No ice gloves in inv or equipped");
         }
-        if (Inventory.getItems("Goldsmith gauntlets").isEmpty() && !Equipment.contains("Goldsmith gauntlets")) {
+        if (Inventory.getItems(GOLDSMITH_GAUNTLETS).isEmpty() && !Equipment.contains(GOLDSMITH_GAUNTLETS)) {
             throw new IllegalStateException("No goldsmith gauntlets in inv or equipped");
         }
 
@@ -99,7 +100,7 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
             return withdrawGoldOresFromOpenedBank(log) && Bank.close();
         }
 
-        if (!Inventory.getItems("Gold ore").isEmpty()) {
+        if (!Inventory.getItems(GOLD_ORE).isEmpty()) {
             return putGoldOreIntoConveyor(log);
         }
 

@@ -3,6 +3,8 @@ package com.kkoemets.scripts.blastfurnace.conveyor;
 import com.runemate.game.api.hybrid.local.hud.interfaces.ChatDialog;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
+import static com.kkoemets.scripts.blastfurnace.BlastFurnaceItems.GOLDSMITH_GAUNTLETS;
+import static com.kkoemets.scripts.blastfurnace.BlastFurnaceItems.GOLD_ORE;
 import static com.kkoemets.scripts.blastfurnace.conveyor.ForemanHandling.payForeman;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Equipment.contains;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
@@ -16,7 +18,7 @@ public class OreConveyorHandling {
     }
 
     public static boolean putGoldOreIntoConveyor(BotLogger log) {
-        if (getItems("Gold ore").isEmpty()) {
+        if (getItems(GOLD_ORE).isEmpty()) {
             return true;
         }
 
@@ -26,7 +28,7 @@ public class OreConveyorHandling {
             return putGoldOreIntoConveyor(log);
         }
 
-        if (!contains("Goldsmith gauntlets") && !getItems("Goldsmith gauntlets").get(0).click()) {
+        if (!contains(GOLDSMITH_GAUNTLETS) && !getItems(GOLDSMITH_GAUNTLETS).get(0).click()) {
             log.debug("Equipping goldsmith gauntlets");
             return putGoldOreIntoConveyor(log);
         }
