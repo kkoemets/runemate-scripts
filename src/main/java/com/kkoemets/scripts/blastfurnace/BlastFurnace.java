@@ -95,8 +95,6 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
             return takeStaminaFromOpenedBankAndCloseBankAndDrink() && openBank(log);
         }
 
-//        if (!Bank.isOpen() && !hasStaminaExpired() && isStaminaInInventory())
-
         if (Bank.isOpen() && !isGoldOresInInventory()) {
             log.info("Banking gold bars and withdrawing gold ore");
             return withdrawGoldOresFromOpenedBank(log) && closeBank();
@@ -113,6 +111,10 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
         if (hasBarDispenserGoldBars()) { //todo!!! if there is like 50 bars, how to handle?
             log.info("Dispenser has gold bars, taking them");
             return takeGoldBarsFromBarDispenser(log);
+        }
+
+        if (!Bank.isOpen() && Inventory.getItems(GOLD_ORE, GOLD_BAR).isEmpty() && !hasBarDispenserGoldBars()) {
+            return openBank(log);
         }
 
         return true;
