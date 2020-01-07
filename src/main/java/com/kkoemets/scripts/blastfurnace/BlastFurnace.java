@@ -108,7 +108,10 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
             return goNearBarDispenser();
         }
 
-        if (hasBarDispenserGoldBars()) { //todo!!! if there is like 50 bars, how to handle?
+        if (hasBarDispenserGoldBars()) {
+            if (Inventory.isFull()) {
+                return openBank(log);
+            }
             log.info("Dispenser has gold bars, taking them");
             return takeGoldBarsFromBarDispenser(log);
         }
