@@ -41,14 +41,14 @@ public class BarDispenserHandling {
             return true;
         }
 
-        if (!Equipment.contains(ICE_GLOVES) && !Inventory.getItems(ICE_GLOVES).get(0).click()) {
-            delay(400, 600);
-            return takeGoldBarsFromBarDispenser(log);
-        }
-
         if (getLocal().isMoving()) {
             log.debug("Player is moving...");
             delay(200, 300);
+            return takeGoldBarsFromBarDispenser(log);
+        }
+
+        if (!Equipment.contains(ICE_GLOVES) && !Inventory.getItems(ICE_GLOVES).get(0).click()) {
+            delay(400, 600);
             return takeGoldBarsFromBarDispenser(log);
         }
 

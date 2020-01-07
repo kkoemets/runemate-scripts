@@ -16,7 +16,6 @@ import static com.kkoemets.scripts.blastfurnace.banking.BlastFurnaceBanking.*;
 import static com.kkoemets.scripts.blastfurnace.camera.BlastFurnaceCameraConfigurer.cameraIsNotSet;
 import static com.kkoemets.scripts.blastfurnace.camera.BlastFurnaceCameraConfigurer.setCamera;
 import static com.kkoemets.scripts.blastfurnace.coffer.CofferHandling.isCofferEmpty;
-import static com.kkoemets.scripts.blastfurnace.conveyor.OreConveyorHandling.equipGoldSmithGauntlets;
 import static com.kkoemets.scripts.blastfurnace.conveyor.OreConveyorHandling.putGoldOreIntoConveyor;
 import static com.kkoemets.scripts.blastfurnace.dispenser.BarDispenserHandling.*;
 import static com.kkoemets.scripts.blastfurnace.stamina.StaminaDrinking.hasStaminaExpired;
