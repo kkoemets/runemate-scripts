@@ -2,6 +2,7 @@ package com.kkoemets.scripts.blastfurnace;
 
 import com.kkoemets.api.common.interaction.InteractionHandler;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
+import com.runemate.game.api.hybrid.local.hud.interfaces.ChatDialog;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.util.calculations.Random;
@@ -83,6 +84,11 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
         }
         if (Inventory.getItems(GOLDSMITH_GAUNTLETS).isEmpty() && !Equipment.contains(GOLDSMITH_GAUNTLETS)) {
             throw new IllegalStateException("No goldsmith gauntlets in inv or equipped");
+        }
+
+        if (ChatDialog.isOpen() && ChatDialog.getText() != null && ChatDialog.getText().contains("molten") &&
+                !Equipment.contains(ICE_GLOVES) && !Inventory.getItems(ICE_GLOVES).get(0).click()) {
+            return true;
         }
 
         if (!Bank.isOpen() && isInventoryContainsGoldBars()) {
