@@ -113,7 +113,7 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 
         if (hasBarDispenserGoldBars()) { //todo!!! if there is like 50 bars, how to handle?
             log.info("Dispenser has gold bars, taking them");
-            return takeGoldBarsFromBarDispenser(log) && equipGoldSmithGauntlets();
+            return takeGoldBarsFromBarDispenser(log);
         }
 
         return true;
