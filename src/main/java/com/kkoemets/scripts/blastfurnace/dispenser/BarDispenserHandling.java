@@ -37,7 +37,7 @@ public class BarDispenserHandling {
     }
 
     public static boolean takeGoldBarsFromBarDispenser(BotLogger log) {
-        if (!hasBarDispenserGoldBars()) {
+        if (!hasBarDispenserGoldBars() || Inventory.isFull()) {
             return true;
         }
 
