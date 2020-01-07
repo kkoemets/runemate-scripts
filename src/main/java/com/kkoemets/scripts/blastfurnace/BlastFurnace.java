@@ -20,6 +20,8 @@ import static com.kkoemets.scripts.blastfurnace.conveyor.OreConveyorHandling.put
 import static com.kkoemets.scripts.blastfurnace.dispenser.BarDispenserHandling.*;
 import static com.kkoemets.scripts.blastfurnace.stamina.StaminaDrinking.hasStaminaExpired;
 import static com.kkoemets.scripts.blastfurnace.stamina.StaminaDrinking.takeStaminaFromOpenedBankAndCloseBankAndDrink;
+import static com.kkoemets.scripts.varbitlogger.NamedVarbit.BAR_DISPENSER;
+import static com.runemate.game.api.hybrid.local.Varbits.load;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
 
 public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
@@ -116,7 +118,8 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
             return takeGoldBarsFromBarDispenser(log);
         }
 
-        if (!Bank.isOpen() && Inventory.getItems(GOLD_ORE, GOLD_BAR).isEmpty() && !hasBarDispenserGoldBars()) {
+        if (!Bank.isOpen() && Inventory.getItems(GOLD_ORE, GOLD_BAR).isEmpty() && !hasBarDispenserGoldBars() &&
+                load(BAR_DISPENSER.getId()).getValue() == 0) {
             return openBank(log);
         }
 
