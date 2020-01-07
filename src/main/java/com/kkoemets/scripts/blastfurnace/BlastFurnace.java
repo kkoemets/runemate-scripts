@@ -13,10 +13,12 @@ import com.runemate.game.api.script.framework.logger.BotLogger;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.kkoemets.scripts.blastfurnace.BlastFurnaceItems.*;
 import static com.kkoemets.scripts.blastfurnace.banking.BlastFurnaceBanking.*;
+import static com.kkoemets.scripts.blastfurnace.camera.BlastFurnaceCameraConfigurer.cameraIsNotSet;
+import static com.kkoemets.scripts.blastfurnace.camera.BlastFurnaceCameraConfigurer.setCamera;
 import static com.kkoemets.scripts.blastfurnace.coffer.CofferHandling.isCofferEmpty;
+import static com.kkoemets.scripts.blastfurnace.conveyor.OreConveyorHandling.equipGoldSmithGauntlets;
 import static com.kkoemets.scripts.blastfurnace.conveyor.OreConveyorHandling.putGoldOreIntoConveyor;
-import static com.kkoemets.scripts.blastfurnace.dispenser.BarDispenserHandling.hasBarDispenserGoldBars;
-import static com.kkoemets.scripts.blastfurnace.dispenser.BarDispenserHandling.takeGoldBarsFromBarDispenser;
+import static com.kkoemets.scripts.blastfurnace.dispenser.BarDispenserHandling.*;
 import static com.kkoemets.scripts.blastfurnace.stamina.StaminaDrinking.hasStaminaExpired;
 import static com.kkoemets.scripts.blastfurnace.stamina.StaminaDrinking.takeStaminaFromOpenedBankAndCloseBankAndDrink;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
@@ -55,10 +57,9 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
     }
 
     public boolean script() {
-//        i
-//        f (cameraIsNotSet()) {
-//            return setCamera();
-//        }
+        if (cameraIsNotSet()) {
+            return setCamera();
+        }
 
 //        if (isCofferEmpty()) {
 //            log.info("Coffer is empty, going to bank");
@@ -95,6 +96,8 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
             return takeStaminaFromOpenedBankAndCloseBankAndDrink() && openBank(log);
         }
 
+//        if (!Bank.isOpen() && !hasStaminaExpired() && isStaminaInInventory())
+
         if (Bank.isOpen() && !isGoldOresInInventory()) {
             log.info("Banking gold bars and withdrawing gold ore");
             return withdrawGoldOresFromOpenedBank(log) && closeBank();
@@ -104,9 +107,13 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
             return putGoldOreIntoConveyor(log);
         }
 
+        if (isPlayerAtConveyorTile() && Inventory.getItems(GOLD_ORE).isEmpty()) {
+            return goNearBarDispenser();
+        }
+
         if (hasBarDispenserGoldBars()) { //todo!!! if there is like 50 bars, how to handle?
             log.info("Dispenser has gold bars, taking them");
-            return takeGoldBarsFromBarDispenser(log);
+            return takeGoldBarsFromBarDispenser(log) && equipGoldSmithGauntlets();
         }
 
         return true;

@@ -1,5 +1,6 @@
 package com.kkoemets.scripts.blastfurnace.conveyor;
 
+import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.local.hud.interfaces.ChatDialog;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
@@ -28,21 +29,31 @@ public class OreConveyorHandling {
             return putGoldOreIntoConveyor(log);
         }
 
-        if (!contains(GOLDSMITH_GAUNTLETS) && !getItems(GOLDSMITH_GAUNTLETS).get(0).click()) {
-            log.debug("Equipping goldsmith gauntlets");
-            return putGoldOreIntoConveyor(log);
-        }
+        equipGoldSmithGauntlets();
 
         if (ChatDialog.isOpen() && ChatDialog.getText().contains("permission")) {
             return payForeman(log);
         }
 
-        if (!newQuery().names("Conveyor belt").results().get(0).interact("Put-ore-on")) {
-            return putGoldOreIntoConveyor(log);
-        }
+        for (GameObject gameObject : newQuery().names("Conveyor belt").results())
+            if (gameObject.click())
+                break;
 
-        delay(2300, 2600);
+        delay(700, 1100);
 
         return putGoldOreIntoConveyor(log);
+    }
+
+    public static boolean equipGoldSmithGauntlets() {
+        if (contains(GOLDSMITH_GAUNTLETS)) {
+            return true;
+        }
+        if (!getItems(GOLDSMITH_GAUNTLETS).get(0).click()) {
+            return equipGoldSmithGauntlets();
+        }
+
+        delay(400, 600);
+        return equipGoldSmithGauntlets();
+
     }
 }

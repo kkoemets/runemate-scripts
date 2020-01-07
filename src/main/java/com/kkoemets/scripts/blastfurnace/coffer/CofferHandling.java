@@ -13,8 +13,7 @@ public class CofferHandling {
     public static boolean isCofferEmpty(BotLogger log) {
         int cofferVarBit = 5357;
         int amountOfGold = load(cofferVarBit).getValue();
-        boolean isEmpty = amountOfGold < 0;
-        if (isEmpty) {
+        if (amountOfGold == 0) {
             log.debug("Coffer is empty!");
             return true;
         }
