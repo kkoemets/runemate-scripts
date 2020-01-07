@@ -35,7 +35,7 @@ public class BlastFurnaceBanking {
         }
 
         log.debug("Clicked on bank chest");
-        delay(1300, 1600);
+        delay(600, 900);
 
         return openBank(log);
     }

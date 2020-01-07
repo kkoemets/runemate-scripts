@@ -25,7 +25,7 @@ public class OreConveyorHandling {
 
         if (getLocal().isMoving()) {
             log.debug("Walking to ore conveyor...");
-            delay(2300, 2600);
+            delay(1300, 1600);
             return putGoldOreIntoConveyor(log);
         }
 
@@ -36,10 +36,10 @@ public class OreConveyorHandling {
         }
 
         for (GameObject gameObject : newQuery().names("Conveyor belt").results())
-            if (gameObject.click())
+            if (gameObject.interact("Put-ore-on"))
                 break;
 
-        delay(700, 1100);
+        delay(600, 800);
 
         return putGoldOreIntoConveyor(log);
     }

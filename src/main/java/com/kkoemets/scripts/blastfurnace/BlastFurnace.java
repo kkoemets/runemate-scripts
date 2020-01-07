@@ -24,6 +24,7 @@ import static com.kkoemets.scripts.blastfurnace.stamina.StaminaDrinking.takeStam
 import static com.kkoemets.scripts.varbitlogger.NamedVarbit.BAR_DISPENSER;
 import static com.runemate.game.api.hybrid.local.Varbits.load;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
+import static com.runemate.game.api.script.Execution.delay;
 
 public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
 
@@ -63,13 +64,6 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
             return setCamera();
         }
 
-//        if (isCofferEmpty()) {
-//            log.info("Coffer is empty, going to bank");
-//            return goToBank(log);
-//        }
-//
-//        goToBank(log);
-//
         if (getLocal() == null) {
             log.info("Waiting for player to appear");
             return true;
@@ -124,12 +118,16 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
             return takeGoldBarsFromBarDispenser(log);
         }
 
-        if (!Bank.isOpen() && Inventory.getItems(GOLD_ORE, GOLD_BAR).isEmpty() && !hasBarDispenserGoldBars() &&
-                load(BAR_DISPENSER.getId()).getValue() == 0) {
+        if (isPlayerIdle() && delay(1500, 2000) && isPlayerIdle()) {
             return openBank(log);
         }
 
         return true;
+    }
+
+    private boolean isPlayerIdle() {
+        return !Bank.isOpen() && Inventory.getItems(GOLD_ORE, GOLD_BAR).isEmpty() && !hasBarDispenserGoldBars() &&
+                load(BAR_DISPENSER.getId()).getValue() == 0;
     }
 
 }
