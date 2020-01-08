@@ -33,7 +33,7 @@ public class StaminaDrinking {
         }
 
         if (!isOpen() && !getItems(STAMINA_POTIONS).isEmpty()
-                && getItems(STAMINA_POTIONS).get(0).click()) {
+                && getItems(STAMINA_POTIONS).get(0).click() && delay(700, 900)) {
             return takeStaminaFromOpenedBankAndCloseBankAndDrink();
         }
 

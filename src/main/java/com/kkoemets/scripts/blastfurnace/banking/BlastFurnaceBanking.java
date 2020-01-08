@@ -35,7 +35,7 @@ public class BlastFurnaceBanking {
         }
 
         log.debug("Clicked on bank chest");
-        delay(600, 900);
+        delay(700, 900);
 
         return openBank(log);
     }
@@ -94,6 +94,19 @@ public class BlastFurnaceBanking {
 
     public static boolean isGoldOresInInventory() {
         return !Inventory.getItems(GOLD_ORE).isEmpty();
+    }
+
+    public static boolean bankEverythingBesidesGloves() {
+        if (Inventory.getItems().size() <= 2 && !Inventory.getItems(ICE_GLOVES, GOLDSMITH_GAUNTLETS).isEmpty()) {
+            return true;
+        }
+        if (!depositAllExcept(ICE_GLOVES, GOLDSMITH_GAUNTLETS)) {
+            return bankEverythingBesidesGloves();
+        }
+
+        delay(500);
+
+        return bankEverythingBesidesGloves();
     }
 
 }

@@ -93,7 +93,7 @@ public class BarDispenserHandling {
             return true;
         }
 
-        delay(500, 600);
+        delay(700, 900);
 
         return BAR_DISPENSER_AREA.getRandomCoordinate().click() || goNearBarDispenser();
     }

@@ -2,7 +2,6 @@ package com.kkoemets.scripts.blastfurnace;
 
 import com.kkoemets.api.common.interaction.InteractionHandler;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
-import com.runemate.game.api.hybrid.local.hud.interfaces.ChatDialog;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.util.calculations.Random;
@@ -41,7 +40,7 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
         // Submit your MoneyPouchListener
         getEventDispatcher().addListener(this);
         // Sets the length of time in milliseconds to wait before calling onLoop again
-        setLoopDelay((Random.nextInt(432, 576)));
+        setLoopDelay((Random.nextInt(124, 325)));
         // Load script configuration
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
@@ -64,9 +63,26 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
             return setCamera();
         }
 
+        if (!validateGameState()) {
+            return true;
+        }
+
+        if (Bank.isOpen()) {
+            return doBanking();
+
+        }
+
+        if (!Bank.isOpen()) {
+            return doActions();
+        }
+
+        return true;
+    }
+
+    private boolean validateGameState() {
         if (getLocal() == null) {
             log.info("Waiting for player to appear");
-            return true;
+            return false;
         }
 
         if (isCofferEmpty(log)) {
@@ -80,34 +96,33 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
             throw new IllegalStateException("No goldsmith gauntlets in inv or equipped");
         }
 
-        if (ChatDialog.isOpen() && ChatDialog.getText() != null && ChatDialog.getText().contains("molten") &&
-                !Equipment.contains(ICE_GLOVES) && !Inventory.getItems(ICE_GLOVES).get(0).click()) {
-            return true;
-        }
+        return true;
+    }
 
-        if (!Bank.isOpen() && isInventoryContainsGoldBars()) {
-            return openBank(log);
-        }
-
-        if (Bank.isOpen() && isInventoryContainsGoldBars()) {
+    private boolean doBanking() {
+        if (isInventoryContainsGoldBars()) {
             return depositGoldBarsToOpenedBank(log);
         }
 
-        if (Bank.isOpen() && hasStaminaExpired()) {
+        if (hasStaminaExpired()) {
             return takeStaminaFromOpenedBankAndCloseBankAndDrink() && openBank(log);
         }
 
-        if (Bank.isOpen() && !isGoldOresInInventory()) {
+        if (hasBarDispenserGoldBars()) {
+            return bankEverythingBesidesGloves() && closeBank();
+        }
+
+        if (!isGoldOresInInventory()) {
             log.info("Banking gold bars and withdrawing gold ore");
             return withdrawGoldOresFromOpenedBank(log) && closeBank();
         }
 
+        return true;
+    }
+
+    private Boolean doActions() {
         if (!Inventory.getItems(GOLD_ORE).isEmpty()) {
             return putGoldOreIntoConveyor(log);
-        }
-
-        if (isPlayerAtConveyorTile() && Inventory.getItems(GOLD_ORE).isEmpty()) {
-            return goNearBarDispenser();
         }
 
         if (hasBarDispenserGoldBars()) {
@@ -118,7 +133,15 @@ public class BlastFurnace extends LoopingBot implements MoneyPouchListener {
             return takeGoldBarsFromBarDispenser(log);
         }
 
-        if (isPlayerIdle() && delay(1500, 2000) && isPlayerIdle()) {
+        if (isInventoryContainsGoldBars()) {
+            return openBank(log);
+        }
+
+        if (isPlayerAtConveyorTile() && Inventory.getItems(GOLD_ORE).isEmpty()) {
+            return goNearBarDispenser();
+        }
+
+        if (isPlayerIdle() && delay(1500, 2000) && isPlayerIdle() && delay(1500, 2000) && isPlayerIdle()) {
             return openBank(log);
         }
 
