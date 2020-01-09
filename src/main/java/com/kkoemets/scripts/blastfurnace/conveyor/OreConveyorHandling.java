@@ -52,8 +52,7 @@ public class OreConveyorHandling {
             return equipGoldSmithGauntlets();
         }
 
-        delay(400, 600);
+        delay(700, 900);
         return equipGoldSmithGauntlets();
-
     }
 }

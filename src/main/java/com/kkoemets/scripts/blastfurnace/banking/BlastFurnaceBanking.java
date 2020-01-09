@@ -41,18 +41,12 @@ public class BlastFurnaceBanking {
     }
 
     public static boolean withdrawGoldOresFromOpenedBank(BotLogger log) {
-        if (!isOpen()) {
-            log.warn("Tried to take gold bars from bank but bank interface was not opened!");
-            return false;
-        }
-
         depositAllExcept(ITEMS_NEEDED_FOR_BLAST_FURNACE);
 
         if (isFull() && !isGoldOresInInventory()) {
             log.warn("Tried to take gold ores but inventory was full!");
             return depositGoldBarsToOpenedBank(log);
         }
-
 
         if (isGoldOresInInventory()) {
             log.debug("Successfully took gold ore");
@@ -67,11 +61,6 @@ public class BlastFurnaceBanking {
     }
 
     public static boolean depositGoldBarsToOpenedBank(BotLogger log) {
-        if (!isOpen()) {
-            log.warn("Tried to take gold bars from bank but bank interface was not opened!");
-            return false;
-        }
-
         if (Inventory.getItems(GOLD_BAR).isEmpty()) {
             log.debug("Successfully banked gold bars and took gold ore");
             return true;
