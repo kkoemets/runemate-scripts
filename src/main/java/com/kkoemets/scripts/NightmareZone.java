@@ -1,52 +1,49 @@
 package com.kkoemets.scripts;
 
 import com.kkoemets.api.nightmarezone.NightmareZoneStateContainer;
-import com.kkoemets.api.nightmarezone.threshold.AbsorptionPointsThresholdContainer;
-import com.kkoemets.api.nightmarezone.threshold.HpThresholdContainer;
+import com.kkoemets.api.nightmarezone.threshold.GenericThresholdContainerImpl;
 import com.kkoemets.api.nightmarezone.threshold.ThresholdContainer;
-import com.runemate.game.api.hybrid.entities.GameObject;
-import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.Player;
+import com.runemate.game.api.hybrid.local.Skill;
 import com.runemate.game.api.hybrid.local.Varbit;
-import com.runemate.game.api.hybrid.local.hud.interfaces.ChatDialog;
+import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Health;
+import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
-import com.runemate.game.api.hybrid.location.Area;
-import com.runemate.game.api.hybrid.location.Coordinate;
-import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
-import com.runemate.game.api.hybrid.region.GameObjects;
-import com.runemate.game.api.hybrid.region.Npcs;
 import com.runemate.game.api.hybrid.util.calculations.Random;
+import com.runemate.game.api.osrs.local.hud.interfaces.Prayer;
 import com.runemate.game.api.script.framework.LoopingBot;
 import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
 import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
-import static com.kkoemets.api.nightmarezone.NightmareZoneStateContainer.DreamMode.ABSORPTION_AND_OVERLOAD_MODE;
+import static com.kkoemets.api.nightmarezone.NightmareZoneStateContainer.DreamMode.ABSORPTION_AND_RANGING_MODE;
+import static com.kkoemets.api.nightmarezone.NightmareZoneStateContainer.DreamMode.SUPER_RESTORE_AND_RANGING_MODE;
 import static com.kkoemets.playersense.CustomPlayerSense.Key.ACTIVENESS_FACTOR_WHILE_WAITING;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.runemate.game.api.hybrid.local.Varbits.load;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
-import static com.runemate.game.api.script.Execution.*;
-import static java.util.Arrays.stream;
+import static com.runemate.game.api.script.Execution.delay;
+import static com.runemate.game.api.script.Execution.delayWhile;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 
 public class NightmareZone extends LoopingBot implements MoneyPouchListener {
 
+    private static final String SUPER_RESTORE = "Super restore";
+    private static final String RANGING_POTION = "Ranging potion";
     private String aSetting;
     private BotLogger log;
-    private Area dominicArea;
 
     private ThresholdContainer hpThresholdContainer;
     private ThresholdContainer absorptionPointsThreshold;
+    private ThresholdContainer prayerThresholdContainer;
+    private ThresholdContainer rangeBuffThresholdContainer;
     private NightmareZoneStateContainer nightmareZoneStateContainer;
-
 
     // Required to tell the client that the bot is EmbeddableUI compatible. Remember, that a bot's main class must have a public no-args constructor, which every Object has by default.
     public NightmareZone() {
@@ -63,16 +60,12 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
 
-        dominicArea = Area.polygonal(nmzStartBox(
-                new int[]{2610, 3112},
-                new int[]{2610, 3120},
-                new int[]{2601, 3120},
-                new int[]{2601, 3112})
-                .toArray(new Coordinate[1]));
+        nightmareZoneStateContainer = new NightmareZoneStateContainer(ABSORPTION_AND_RANGING_MODE);
 
-        hpThresholdContainer = new HpThresholdContainer();
-        absorptionPointsThreshold = new AbsorptionPointsThresholdContainer();
-        nightmareZoneStateContainer = new NightmareZoneStateContainer(ABSORPTION_AND_OVERLOAD_MODE);
+        hpThresholdContainer = new GenericThresholdContainerImpl(2, 4);
+        absorptionPointsThreshold = new GenericThresholdContainerImpl(769, 821);
+        rangeBuffThresholdContainer = new GenericThresholdContainerImpl(4, 6);
+        prayerThresholdContainer = new GenericThresholdContainerImpl(9, 26);
 //        setZoom(0.027, 0.004);
     }
 
@@ -107,9 +100,15 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
                 break;
             case ABSORPTION_AND_OVERLOAD_MODE:
                 absorptionAndOverloadModeScript();
+                break;
+            case SUPER_RESTORE_AND_RANGING_MODE:
+                superRestoreAndRangerPotionMode();
+                break;
+            case ABSORPTION_AND_RANGING_MODE:
+                absorptionAndRangingMode();
         }
-        log.debug("End of main loop, overload time approx. left: " + (getOverloadTime().isPresent() ?
-                getOverloadTime().get().getValue() * 15 : 0) + " seconds");
+
+        log.info("The end");
     }
 
     private void absorptionAndOverloadModeScript() {
@@ -132,18 +131,16 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
                 delayWhile(() -> getOverloadTime().get().getValue() > 19, 5757, 7213);
                 log.info("Guzzling dwarven rock cake until full");
                 guzzleRockCakeUntilHpIs(1);
+
+                log.debug("End of main loop, overload time approx. left: " + (getOverloadTime().isPresent() ?
+                        getOverloadTime().get().getValue() * 15 : 0) + " seconds");
             }
-        } else {
-            log.info("No overloads, using absorption potions only mode");
-            absorptionModeScript();
         }
     }
 
     private void absorptionModeScript() {
         if (isHpGreaterThan(hpThresholdContainer.getThreshold())) {
             log.info("Hp is below threshold: " + hpThresholdContainer.getThreshold());
-            log.info("Starting to guzzle dwarven rock cake until hp is 1");
-            guzzleRockCakeUntilHpIs(1);
 
             hpThresholdContainer.nextThreshold();
             log.info("New hp threshold: " + hpThresholdContainer.getThreshold());
@@ -151,9 +148,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
             if ((!getAbsorptionPoints().isPresent()
                     || isAbsorptionPointsUnder(getAbsorptionPoints().get(),
                     absorptionPointsThreshold.getThreshold())) && !getAbsorptionPotions().isEmpty()) {
-                log.info("Absorption potion is below threshold: " +
-
-                        absorptionPointsThreshold.getThreshold());
+                log.info("Absorption potion is below threshold: " + absorptionPointsThreshold.getThreshold());
 
                 drinkAbsorptionPotionsUntilFull();
 
@@ -163,53 +158,98 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
         }
     }
 
-    private void nmzScript() {
-        if (!ofNullable(getLocal()).isPresent()) {
-            log.info("Waiting for player to appear in-game...");
-            return;
-        }
-        if (!dominicArea.contains(getLocal().getPosition())) {
-            throw new IllegalStateException("Player is not near Nightmare Zone vial and is not in" +
-                    " a dream");
+    private boolean superRestoreAndRangerPotionMode() {
+        SpriteItemQueryResults rangePotions = getRangingPotions();
+        SpriteItemQueryResults superRestorePotions = getSuperRestorePotions();
+
+        log.info(RANGING_POTION + " amount: " + rangePotions.size());
+        if (superRestorePotions.isEmpty()) {
+            throw new RuntimeException("No more " + SUPER_RESTORE);
         }
 
-        if (getDwarvenRockCake().isEmpty()) {
-            throw new IllegalStateException("Player does not have a rock cake in the inventory");
+        log.info(SUPER_RESTORE + " amount: " + superRestorePotions.size());
+
+        int prayerPoints = Prayer.getPoints();
+        log.info("Prayer points: " + prayerPoints);
+
+        int prayerThreshold = prayerThresholdContainer.getThreshold();
+        log.info("Current prayer prayerThreshold: " + prayerThreshold);
+        if (prayerPoints <= prayerThreshold) {
+            log.info("Drinking " + SUPER_RESTORE);
+            superRestorePotions.get(0).click();
+            prayerThresholdContainer.nextThreshold();
         }
+
+        validateRangeAndDrinkRangingPotionIfNecessary(rangePotions);
+
+        return true;
+    }
+
+    public boolean absorptionAndRangingMode() {
+        Optional<Varbit> absorptionPoints = getAbsorptionPoints();
+        absorptionPoints.ifPresent(points -> log.info("Current absorption points: " + points.getValue()));
+        log.info("Current absorption points threshold: " + absorptionPointsThreshold.getThreshold());
 
         if (getAbsorptionPotions().isEmpty()) {
-            throw new IllegalStateException("Player does not have absorption potions in the " +
-                    "inventory");
+            log.info("Current hp threshold: " + hpThresholdContainer.getThreshold());
         }
 
-        if (delay(677, 986) && getLocal().getAnimationId() != -1) {
-            log.info("Player is doing something...");
-            return;
+        if (getAbsorptionPotions().isEmpty() && isHpGreaterThan(hpThresholdContainer.getThreshold())) {
+            guzzleRockCakeUntilHpIs(1);
+            hpThresholdContainer.getThreshold();
         }
 
-        if (!GameObjects.newQuery().names("Empty vial").results().isEmpty()) {
-            log.info("Dream has not been started to yet, talking to Dominic Onion");
-            Npc dominicOnion = Npcs.newQuery().names("Dominic Onion").results().get(0);
-            log.info("Clicking on Dominic Onion to start a dream");
-            dominicOnion.interact("Dream");
-            delay(5000);
-            if (ChatDialog.isOpen()) {
-                log.info("Chat is open with Dominic Onion");
-                ChatDialog.getOption(4).select();
-                delay(1000);
-                ChatDialog.getContinue().select();
-                delay(1000);
-                ChatDialog.getOption(1).select();
-                log.info("A dream has been bought");
+        if ((!absorptionPoints.isPresent() || isAbsorptionPointsUnder(absorptionPoints.get(),
+                absorptionPointsThreshold.getThreshold())) && !getAbsorptionPotions().isEmpty()) {
+            log.info("Absorption potion is below threshold: " + absorptionPointsThreshold.getThreshold());
+            drinkAbsorptionPotionsUntilFull();
+
+            absorptionPointsThreshold.nextThreshold();
+            log.info("New absorption potion threshold: " + absorptionPointsThreshold.getThreshold());
+
+            log.info("Starting to guzzle dwarven rock cake until hp is 1");
+            guzzleRockCakeUntilHpIs(1);
+        }
+
+        SpriteItemQueryResults rangePotions = getRangingPotions();
+        log.info(RANGING_POTION + " amount: " + rangePotions.size());
+
+        return validateRangeAndDrinkRangingPotionIfNecessary(rangePotions);
+    }
+
+    private boolean validateRangeAndDrinkRangingPotionIfNecessary(SpriteItemQueryResults rangePotions) {
+        if (!Equipment.contains("Rune arrow")) {
+            throw new RuntimeException("Missing rune arrows");
+        }
+
+        if (!Equipment.contains("Magic shortbow (i)")) {
+            throw new RuntimeException("Missing Magic shortbow (i)");
+        }
+
+        int currentLevel = Skill.RANGED.getCurrentLevel();
+        int baseLevel = Skill.RANGED.getBaseLevel();
+        int dif = currentLevel - baseLevel;
+        int rangingThreshold = rangeBuffThresholdContainer.getThreshold();
+
+        log.info("Current ranging level: " + currentLevel);
+        log.info("Base ranging level: " + baseLevel);
+        log.info("Current ranging buff " + dif);
+        log.info("Current ranging rangingThreshold " + rangingThreshold);
+
+        if (!rangePotions.isEmpty() && dif <= rangingThreshold) {
+            delay(5245, 12356);
+            log.info("Drinking " + RANGING_POTION);
+            if (Random.nextInt(0, 100) >= 56 && !InterfaceWindows.getSkills().isOpen()) {
+                log.info("Checking skills interface");
+                InterfaceWindows.getSkills().open();
+                delay(1245, 2356);
             }
+
+            getRangingPotions().get(0).click(); // todo!!
+            rangeBuffThresholdContainer.nextThreshold();
         }
 
-        LocatableEntityQueryResults<GameObject> potion = GameObjects.newQuery().names("Potion")
-                .results();
-        if (!potion.isEmpty()) {
-            log.info("Everything is ready for a dream");
-            potion.get(0).interact("Drink");
-        }
+        return true;
     }
 
     private Optional<Varbit> getAbsorptionPoints() {
@@ -269,7 +309,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
     }
 
     private boolean isHpGreaterThan(int i) {
-        return Health.getCurrent() > i;
+        return Health.getCurrent() >= i;
     }
 
     private boolean isAbsorptionPointsUnderMax(Varbit absorptionPoints) {
@@ -288,9 +328,18 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
                 "Overload (4)").sortByIndex();
     }
 
-    private List<Coordinate> nmzStartBox(int[]... intArrays) {
-        return stream(intArrays).map(intArray -> new Coordinate(intArray[0], intArray[1]))
-                .collect(toList());
+    private SpriteItemQueryResults getSuperRestorePotions() {
+        return getItems(potionArray(SUPER_RESTORE)).sortByIndex();
+    }
+
+    private SpriteItemQueryResults getRangingPotions() {
+        return getItems(potionArray(RANGING_POTION)).sortByIndex();
+    }
+
+    public String[] potionArray(String potionName) {
+        return IntStream.rangeClosed(1, 4)
+                .mapToObj(i -> potionName + "(" + i + ")")
+                .toArray(String[]::new);
     }
 
 }

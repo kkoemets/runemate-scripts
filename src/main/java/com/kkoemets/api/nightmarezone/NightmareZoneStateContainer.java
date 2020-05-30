@@ -14,6 +14,8 @@ public class NightmareZoneStateContainer {
 
     public enum DreamMode {
         ABSORPTION_AND_OVERLOAD_MODE,
-        ABSORPTION_MODE
+        ABSORPTION_MODE,
+        SUPER_RESTORE_AND_RANGING_MODE,
+        ABSORPTION_AND_RANGING_MODE
     }
 }
