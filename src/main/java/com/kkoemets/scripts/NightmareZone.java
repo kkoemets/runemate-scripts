@@ -64,7 +64,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
 
         hpThresholdContainer = new GenericThresholdContainerImpl(2, 4);
         absorptionPointsThreshold = new GenericThresholdContainerImpl(769, 821);
-        rangeBuffThresholdContainer = new GenericThresholdContainerImpl(4, 6);
+        rangeBuffThresholdContainer = new GenericThresholdContainerImpl(5, 8);
         prayerThresholdContainer = new GenericThresholdContainerImpl(9, 26);
 //        setZoom(0.027, 0.004);
     }
