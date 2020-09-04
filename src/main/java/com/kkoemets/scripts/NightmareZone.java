@@ -65,7 +65,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
 
-        nightmareZoneStateContainer = new NightmareZoneStateContainer(ABSORPTION_AND_RANGING_MODE);
+        nightmareZoneStateContainer = new NightmareZoneStateContainer(ABSORPTION_AND_OVERLOAD_MODE);
 
         hpThresholdContainer = new GenericThresholdContainerImpl(2, 4);
         absorptionPointsThreshold = new GenericThresholdContainerImpl(769, 821);
@@ -124,7 +124,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
 
         if (isHpGreaterThan(50)) {
             log.info("Drinking overload potion");
-            drinkOverloadDose();
+            return drinkOverloadDose();
         }
 
         if (!getAbsorptionPotions().isEmpty()) {
@@ -301,9 +301,9 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
         return ofNullable(load(overloadVarBit));
     }
 
-    private void drinkOverloadDose() {
+    private boolean drinkOverloadDose() {
         getOverloadPotions().sortByIndex().get(0).click();
-        delayWhile(() -> !getOverloadTime().isPresent() || getOverloadTime().get().getValue() != 20,
+        return delayWhile(() -> !getOverloadTime().isPresent() || getOverloadTime().get().getValue() != 20,
                 3533, 5345);
     }
 
