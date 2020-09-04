@@ -124,7 +124,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
 
         if (isHpGreaterThan(50)) {
             log.info("Drinking overload potion");
-            return drinkOverloadDose();
+            drinkOverloadDose();
         }
 
         if (!getAbsorptionPotions().isEmpty()) {
@@ -301,10 +301,14 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
         return ofNullable(load(overloadVarBit));
     }
 
-    private boolean drinkOverloadDose() {
+    private void drinkOverloadDose() {
+        if (!hasOverloadPotionEnded()) {
+            return;
+        }
         getOverloadPotions().sortByIndex().get(0).click();
-        return delayWhile(() -> !getOverloadTime().isPresent() || getOverloadTime().get().getValue() != 20,
+        delayWhile(() -> !getOverloadTime().isPresent() || getOverloadTime().get().getValue() != 20,
                 3533, 5345);
+        drinkOverloadDose();
     }
 
     private void drinkAbsorptionPotionsUntilFull() {
