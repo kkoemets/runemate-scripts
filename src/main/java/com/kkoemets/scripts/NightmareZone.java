@@ -302,7 +302,7 @@ public class NightmareZone extends LoopingBot implements MoneyPouchListener {
     }
 
     private void drinkOverloadDose() {
-        if (!hasOverloadPotionEnded()) {
+        if (getOverloadTime().isPresent() && !hasOverloadPotionEnded()) {
             return;
         }
         getOverloadPotions().sortByIndex().get(0).click();
