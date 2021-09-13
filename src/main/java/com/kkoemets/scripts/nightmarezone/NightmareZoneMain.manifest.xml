@@ -1,14 +1,14 @@
 <manifest>
-    <main-class>com.kkoemets.scripts.NightmareZone</main-class>
+    <main-class>com.kkoemets.scripts.nightmarezone.NightmareZoneMain</main-class>
     <name>NightmareZone</name>
-    <tag-line>Test bot</tag-line><!--Max of 50 chars-->
-    <description>Test</description><!--Max of 110 chars-->
+    <tag-line>Ez xp</tag-line><!--Max of 50 chars-->
+    <description>Ez life</description><!--Max of 110 chars-->
     <version>1.0.2</version>
     <compatibility>
         <game>OSRS</game>
     </compatibility>
     <categories>
-        <category>MINIGAME</category>
+        <category>Combat</category>
     </categories>
     <!--Required to publish on the bot store-->
     <internal-id>Test</internal-id>
