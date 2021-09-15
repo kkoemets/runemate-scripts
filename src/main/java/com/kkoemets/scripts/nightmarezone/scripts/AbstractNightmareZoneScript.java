@@ -5,6 +5,7 @@ import com.kkoemets.api.nightmarezone.threshold.ThresholdContainer;
 import com.kkoemets.scripts.varbitlogger.NamedVarbit;
 import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.local.Varbit;
+import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Health;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
@@ -85,9 +86,9 @@ public abstract class AbstractNightmareZoneScript {
             return true;
         }
 
-        return getLocal().getWornItems().stream()
+        return Equipment.getItems().stream()
                 .anyMatch(item -> Stream.of("arrow", "bolt")
-                        .anyMatch(ammo -> item.getName().contains(ammo)));
+                        .anyMatch(ammo -> item.getDefinition().getName().contains(ammo)));
     }
 
     protected Optional<Varbit> getAbsorptionPoints() {
