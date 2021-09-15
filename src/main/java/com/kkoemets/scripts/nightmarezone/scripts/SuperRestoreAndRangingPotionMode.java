@@ -10,11 +10,11 @@ import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import static com.runemate.game.api.script.Execution.delay;
 
-abstract class SuperRestoreAndRangingPotionMode extends AbstractNightmareZoneScript {
+public abstract class SuperRestoreAndRangingPotionMode extends AbstractNightmareZoneScript {
     protected static final String SUPER_RESTORE = "Super restore";
     protected static final String RANGING_POTION = "Ranging potion";
 
-    protected SuperRestoreAndRangingPotionMode(BotLogger log) {
+    public SuperRestoreAndRangingPotionMode(BotLogger log) {
         super(log);
     }
 

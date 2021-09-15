@@ -4,9 +4,9 @@ import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import static java.math.BigInteger.ONE;
 
-abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
+public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
 
-    protected AbsorptionModeScript(BotLogger log) {
+    public AbsorptionModeScript(BotLogger log) {
         super(log);
     }
 

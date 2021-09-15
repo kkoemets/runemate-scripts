@@ -10,7 +10,7 @@ import static com.runemate.game.api.hybrid.local.Varbits.load;
 import static com.runemate.game.api.script.Execution.delayWhile;
 import static java.util.Optional.ofNullable;
 
-public abstract class AbsorptionAndOverloadModeScript extends AbstractNightmareZoneScript {
+public abstract class AbsorptionAndOverloadModeScript extends AbsorptionModeScript {
     private static final String OVERLOAD = "Overload ";
 
     protected AbsorptionAndOverloadModeScript(BotLogger log) {
@@ -26,9 +26,7 @@ public abstract class AbsorptionAndOverloadModeScript extends AbstractNightmareZ
     @Override
     boolean run() {
         if (getOverloadPotions().isEmpty()) {
-            AbsorptionModeScript absorptionModeScript = new AbsorptionModeScript(log) {
-            };
-            return absorptionModeScript.execute();
+            return super.execute();
         }
 
         if (getOverloadTime().isPresent() && !hasOverloadPotionEnded()) {

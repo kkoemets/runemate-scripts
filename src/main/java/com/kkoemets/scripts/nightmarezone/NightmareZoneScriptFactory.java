@@ -3,10 +3,15 @@ package com.kkoemets.scripts.nightmarezone;
 import com.kkoemets.api.nightmarezone.threshold.GenericThresholdContainerImpl;
 import com.kkoemets.api.nightmarezone.threshold.ThresholdContainer;
 import com.kkoemets.scripts.nightmarezone.scripts.AbsorptionAndOverloadModeScript;
+import com.kkoemets.scripts.nightmarezone.scripts.AbsorptionModeScript;
 import com.kkoemets.scripts.nightmarezone.scripts.AbstractNightmareZoneScript;
+import com.kkoemets.scripts.nightmarezone.scripts.SuperRestoreAndRangingPotionMode;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
-public class NightmareZoneScriptFactory {
+final class NightmareZoneScriptFactory {
+
+    private NightmareZoneScriptFactory() {
+    }
 
     public static AbstractNightmareZoneScript overloadModeWithForDef1Pures(BotLogger log) {
         return new AbsorptionAndOverloadModeScript(log) {
@@ -25,11 +30,25 @@ public class NightmareZoneScriptFactory {
 
                 return true;
             }
+        };
+    }
 
+    public static AbstractNightmareZoneScript absorptionAndOverloadModeScript(BotLogger logger) {
+        return new AbsorptionAndOverloadModeScript(logger) {
             @Override
-            public boolean execute() {
-                return super.execute();
+            protected boolean doAdditionalValidations() {
+                return super.doAdditionalValidations();
             }
+        };
+    }
+
+    public static AbstractNightmareZoneScript superRestoreAndRangingPotionMode(BotLogger logger) {
+        return new SuperRestoreAndRangingPotionMode(logger) {
+        };
+    }
+
+    public static AbstractNightmareZoneScript absorptionModeScript(BotLogger logger) {
+        return new AbsorptionModeScript(logger) {
         };
     }
 
