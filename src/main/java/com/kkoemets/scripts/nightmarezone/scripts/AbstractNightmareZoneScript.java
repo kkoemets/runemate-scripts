@@ -13,6 +13,7 @@ import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import java.util.Optional;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.runemate.game.api.hybrid.local.Varbits.load;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
@@ -46,6 +47,10 @@ public abstract class AbstractNightmareZoneScript {
             return false;
         }
 
+        if (!validateThatArrowsExistWhenWieldingBow()) {
+            throw new IllegalStateException("You have a bow, but where are your arrows?");
+        }
+
 
         if (!isPlayerInADream(player.get())) {
             throw new IllegalStateException("Player is not in a dream!");
@@ -72,6 +77,17 @@ public abstract class AbstractNightmareZoneScript {
         }
 
         return true;
+    }
+
+    protected boolean validateThatArrowsExistWhenWieldingBow() {
+        if (getLocal().getWornItems().stream()
+                .noneMatch(item -> item.getName().contains("bow"))) {
+            return true;
+        }
+
+        return getLocal().getWornItems().stream()
+                .anyMatch(item -> Stream.of("arrow", "bolt")
+                        .anyMatch(ammo -> item.getName().contains(ammo)));
     }
 
     protected Optional<Varbit> getAbsorptionPoints() {
