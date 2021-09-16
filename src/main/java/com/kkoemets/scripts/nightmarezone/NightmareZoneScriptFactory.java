@@ -17,20 +17,20 @@ final class NightmareZoneScriptFactory {
 
     public static List<AbstractNightmareZoneScript> getAll(BotLogger logger) {
         return asList(
-                overloadModeWithForDef1Pures(logger),
+                absorptionAndOverloadModeForDef1Pures(logger),
                 absorptionAndOverloadModeScript(logger),
                 superRestoreAndRangingPotionMode(logger),
                 absorptionModeScript(logger)
         );
     }
 
-    public static AbstractNightmareZoneScript overloadModeWithForDef1Pures(BotLogger log) {
+    public static AbstractNightmareZoneScript absorptionAndOverloadModeForDef1Pures(BotLogger log) {
         return new AbsorptionAndOverloadModeScript(log) {
             private final ThresholdContainer localHpThreshold = new GenericThresholdContainerImpl(2, 4);
 
             @Override
             public ScriptName getScriptName() {
-                return OVERLOAD_MODE_WITH_FOR_DEF_1_PURES;
+                return ABSORPTION_AND_OVERLOAD_MODE_FOR_DEF_1_PURES;
             }
 
             @Override
