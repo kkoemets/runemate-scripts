@@ -6,7 +6,7 @@ import static java.math.BigInteger.ONE;
 
 public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
 
-    public AbsorptionModeScript(BotLogger log) {
+    protected AbsorptionModeScript(BotLogger log) {
         super(log);
     }
 

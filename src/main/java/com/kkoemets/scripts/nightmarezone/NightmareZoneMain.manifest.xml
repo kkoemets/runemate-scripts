@@ -16,11 +16,7 @@
     <open-source>true</open-source>
     <hidden>false</hidden> <!--If you need to hide it from the bot store for maintenance-->
     <access>public</access>
-    <!--    <tags>-->
-    <!--        <tag>Tree</tag>-->
-    <!--        <tag>Vine</tag>-->
-    <!--    </tags>-->
-    <!--    <resources>-->
-    <!--        <resource>path/to/file.png</resource>-->
-    <!--    </resources>-->
+    <resources>
+        <resource>runemate-scripts\com\kkoemets\scripts\nightmarezone\NightmareZoneMain.fxml</resource>
+    </resources>
 </manifest>

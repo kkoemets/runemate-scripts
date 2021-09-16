@@ -64,6 +64,8 @@ public abstract class AbstractNightmareZoneScript {
 
     abstract boolean run();
 
+    public abstract ScriptName getScriptName();
+
     public boolean execute() {
         return validate() && doAdditionalValidations() && run();
     }
@@ -148,7 +150,7 @@ public abstract class AbstractNightmareZoneScript {
         return getItems(potionArray(potions)).sortByIndex();
     }
 
-    public String[] potionArray(String potionName) {
+    protected String[] potionArray(String potionName) {
         return IntStream.rangeClosed(1, 4)
                 .mapToObj(i -> potionName + "(" + i + ")")
                 .toArray(String[]::new);
