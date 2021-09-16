@@ -16,6 +16,11 @@ public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
     }
 
     @Override
+    public boolean execute() {
+        return validate() && doAdditionalValidations() && run();
+    }
+
+    @Override
     boolean run() {
         if (!isHpGreaterThan(hpThresholdContainer.getThreshold())) {
             return true;
