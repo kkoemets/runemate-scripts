@@ -13,7 +13,7 @@ import java.util.List;
 
 import static com.kkoemets.playersense.CustomPlayerSense.Key.ACTIVENESS_FACTOR_WHILE_WAITING;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
-import static com.kkoemets.scripts.nightmarezone.NightmareZoneScriptFactory.getAll;
+import static com.kkoemets.scripts.nightmarezone.scripts.NightmareZoneScriptFactory.getAll;
 
 public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener, SkillListener {
 

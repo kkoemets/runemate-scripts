@@ -1,4 +1,4 @@
-package com.kkoemets.scripts.nightmarezone.scripts;
+package com.kkoemets.scripts.nightmarezone.scripts.presets;
 
 import com.runemate.game.api.hybrid.local.Varbit;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;

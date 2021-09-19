@@ -1,16 +1,17 @@
-package com.kkoemets.scripts.nightmarezone;
+package com.kkoemets.scripts.nightmarezone.scripts;
 
 import com.kkoemets.api.nightmarezone.threshold.GenericThresholdContainerImpl;
 import com.kkoemets.api.nightmarezone.threshold.ThresholdContainer;
-import com.kkoemets.scripts.nightmarezone.scripts.*;
+import com.kkoemets.scripts.nightmarezone.scripts.AbstractNightmareZoneScript;
+import com.kkoemets.scripts.nightmarezone.scripts.presets.*;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import java.util.List;
 
-import static com.kkoemets.scripts.nightmarezone.scripts.ScriptName.*;
+import static com.kkoemets.scripts.nightmarezone.scripts.presets.ScriptName.*;
 import static java.util.Arrays.asList;
 
-final class NightmareZoneScriptFactory {
+public final class NightmareZoneScriptFactory {
 
     private NightmareZoneScriptFactory() {
     }

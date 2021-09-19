@@ -1,4 +1,4 @@
-package com.kkoemets.scripts.nightmarezone.scripts;
+package com.kkoemets.scripts.nightmarezone.scripts.presets;
 
 public enum ScriptName {
     SUPER_RESTORE_AND_RANGING_POTION_MODE,

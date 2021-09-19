@@ -1,5 +1,6 @@
-package com.kkoemets.scripts.nightmarezone.scripts;
+package com.kkoemets.scripts.nightmarezone.scripts.presets;
 
+import com.kkoemets.scripts.nightmarezone.scripts.AbstractNightmareZoneScript;
 import com.runemate.game.api.hybrid.local.Skill;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
