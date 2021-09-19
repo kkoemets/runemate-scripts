@@ -1,7 +1,6 @@
 package com.kkoemets.scripts.nightmarezone;
 
 import com.kkoemets.scripts.nightmarezone.scripts.AbstractNightmareZoneScript;
-import com.kkoemets.scripts.nightmarezone.state.NightmareZoneConfigurationState;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -40,19 +39,22 @@ public class NightmareZoneController implements Initializable {
 
         toggleBtn.setText("Turn on");
         toggleBtn.setOnAction(event -> {
-            NightmareZoneConfigurationState state = main.getNightmareZoneConfigurationState();
-
             AbstractNightmareZoneScript selectedScript = main
                     .getAllScripts().stream()
                     .filter(script -> script.getScriptName().toString()
                             .equals(presetOptions.getSelectionModel().getSelectedItem().toString()))
                     .findFirst().get();
+
+            main.setCurrentScript(selectedScript);
+
             System.out.printf("Selected script: %s%n", selectedScript.getScriptName());
 
-            state.setCurrentScript(selectedScript);
+            Runnable stateChange = main.isPaused()
+                    ? main::resume
+                    : main::pause;
+            stateChange.run();
 
-            state.invertToggle();
-            toggleBtn.setText(state.isRunning() ? "Turn off" : "Turn on");
+            toggleBtn.setText(main.isPaused() ? "Turn on" : "Turn off");
         });
     }
 

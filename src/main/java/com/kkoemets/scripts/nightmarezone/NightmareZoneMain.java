@@ -1,10 +1,11 @@
 package com.kkoemets.scripts.nightmarezone;
 
 import com.kkoemets.scripts.nightmarezone.scripts.AbstractNightmareZoneScript;
-import com.kkoemets.scripts.nightmarezone.state.NightmareZoneConfigurationState;
 import com.runemate.game.api.script.framework.LoopingBot;
 import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
+import com.runemate.game.api.script.framework.listeners.SkillListener;
 import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
+import com.runemate.game.api.script.framework.listeners.events.SkillEvent;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 import javafx.application.Platform;
 
@@ -14,12 +15,12 @@ import static com.kkoemets.playersense.CustomPlayerSense.Key.ACTIVENESS_FACTOR_W
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.kkoemets.scripts.nightmarezone.NightmareZoneScriptFactory.getAll;
 
-public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener {
+public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener, SkillListener {
 
     private String aSetting;
     private BotLogger log;
     private List<AbstractNightmareZoneScript> allScripts;
-    private NightmareZoneConfigurationState nightmareZoneConfigurationState;
+    private AbstractNightmareZoneScript currentScript = null;
 
     // Required to tell the client that the bot is EmbeddableUI compatible. Remember, that a bot's main class must have a public no-args constructor, which every Object has by default.
     public NightmareZoneMain() {
@@ -37,7 +38,6 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener 
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
 
-        nightmareZoneConfigurationState = new NightmareZoneConfigurationState();
         allScripts = getAll(log);
         Platform.runLater(() -> new NightmareZoneGui(this));
     }
@@ -48,13 +48,18 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener 
     }
 
     @Override
+    public void onExperienceGained(SkillEvent event) {
+
+    }
+
+    @Override
     public void onLoop() {
-        AbstractNightmareZoneScript script = nightmareZoneConfigurationState.getCurrentScript();
-        if (script == null) {
-            log.info("No script selected");
-            return;
+        if (currentScript == null) {
+            pause();
+        } else {
+            currentScript.execute();
         }
-        script.execute();
+
         log.info("The end");
     }
 
@@ -63,9 +68,12 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener 
         return allScripts;
     }
 
+    public AbstractNightmareZoneScript getCurrentScript() {
+        return currentScript;
+    }
 
-    public NightmareZoneConfigurationState getNightmareZoneConfigurationState() {
-        return nightmareZoneConfigurationState;
+    public void setCurrentScript(AbstractNightmareZoneScript currentScript) {
+        this.currentScript = currentScript;
     }
 
 }
