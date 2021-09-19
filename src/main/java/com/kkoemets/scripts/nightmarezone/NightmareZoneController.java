@@ -1,6 +1,6 @@
 package com.kkoemets.scripts.nightmarezone;
 
-import com.kkoemets.scripts.nightmarezone.scripts.AbstractNightmareZoneScript;
+import com.kkoemets.scripts.nightmarezone.scripts.presets.AbstractNightmareZoneScript;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;

@@ -1,6 +1,6 @@
 package com.kkoemets.scripts.nightmarezone;
 
-import com.kkoemets.scripts.nightmarezone.scripts.AbstractNightmareZoneScript;
+import com.kkoemets.scripts.nightmarezone.scripts.presets.AbstractNightmareZoneScript;
 import com.runemate.game.api.script.framework.LoopingBot;
 import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
 import com.runemate.game.api.script.framework.listeners.SkillListener;

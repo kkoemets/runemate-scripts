@@ -1,8 +1,7 @@
-package com.kkoemets.scripts.nightmarezone.scripts;
+package com.kkoemets.scripts.nightmarezone.scripts.presets;
 
 import com.kkoemets.api.nightmarezone.threshold.GenericThresholdContainerImpl;
 import com.kkoemets.api.nightmarezone.threshold.ThresholdContainer;
-import com.kkoemets.scripts.nightmarezone.scripts.presets.ScriptName;
 import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Health;

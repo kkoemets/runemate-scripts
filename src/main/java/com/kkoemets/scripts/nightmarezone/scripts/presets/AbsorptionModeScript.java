@@ -1,6 +1,5 @@
 package com.kkoemets.scripts.nightmarezone.scripts.presets;
 
-import com.kkoemets.scripts.nightmarezone.scripts.AbstractNightmareZoneScript;
 import com.kkoemets.scripts.varbitlogger.NamedVarbit;
 import com.runemate.game.api.hybrid.local.Varbit;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Health;
