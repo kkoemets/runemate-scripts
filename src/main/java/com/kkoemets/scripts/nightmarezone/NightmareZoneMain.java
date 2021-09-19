@@ -31,15 +31,15 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener 
         // Submit your MoneyPouchListener
         getEventDispatcher().addListener(this);
 
-        Platform.runLater(() -> new NightmareZoneGui(this));
-
         // Sets the length of time in milliseconds to wait before calling onLoop again
         setLoopDelay((int) (ACTIVENESS_FACTOR_WHILE_WAITING.getAsDouble() * 10000));
         // Load script configuration
         aSetting = getSettings().getProperty("setting");
         log = getLogger();
+
         nightmareZoneConfigurationState = new NightmareZoneConfigurationState();
         allScripts = getAll(log);
+        Platform.runLater(() -> new NightmareZoneGui(this));
     }
 
     @Override
