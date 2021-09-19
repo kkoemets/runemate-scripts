@@ -95,7 +95,7 @@ public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
     protected void drinkAbsorptionPotionsUntilFull() {
         while (!getAbsorptionPoints().isPresent() ||
                 (isAbsorptionPointsUnderMax(getAbsorptionPoints().get()) && !getAbsorptionPotions()
-                        .isEmpty())) {
+                        .isEmpty()) && validate()) {
             drinkAbsorptionPotion();
         }
     }
