@@ -18,10 +18,9 @@ public abstract class AbsorptionAndOverloadModeScript extends AbsorptionModeScri
     }
 
     @Override
-    protected boolean doAdditionalValidations() {
-        return validateRockCake();
+    public boolean doAdditionalValidations() {
+        return super.doAdditionalValidations();
     }
-
 
     @Override
     boolean run() {

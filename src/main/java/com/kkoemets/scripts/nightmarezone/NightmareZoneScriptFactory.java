@@ -34,7 +34,9 @@ final class NightmareZoneScriptFactory {
             }
 
             @Override
-            protected boolean doAdditionalValidations() {
+            public boolean doAdditionalValidations() {
+                super.doAdditionalValidations();
+
                 if (!hasOverloadPotionEnded() && isHpGreaterThan(localHpThreshold.getThreshold())) {
                     guzzleRockCakeUntilHpIs(1);
                     localHpThreshold.nextThreshold();
@@ -53,7 +55,7 @@ final class NightmareZoneScriptFactory {
             }
 
             @Override
-            protected boolean doAdditionalValidations() {
+            public boolean doAdditionalValidations() {
                 return super.doAdditionalValidations();
             }
         };

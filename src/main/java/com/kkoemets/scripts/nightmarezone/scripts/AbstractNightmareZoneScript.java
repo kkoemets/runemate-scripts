@@ -2,29 +2,21 @@ package com.kkoemets.scripts.nightmarezone.scripts;
 
 import com.kkoemets.api.nightmarezone.threshold.GenericThresholdContainerImpl;
 import com.kkoemets.api.nightmarezone.threshold.ThresholdContainer;
-import com.kkoemets.scripts.varbitlogger.NamedVarbit;
 import com.runemate.game.api.hybrid.entities.Player;
-import com.runemate.game.api.hybrid.local.Varbit;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Health;
-import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
-import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static com.runemate.game.api.hybrid.local.Varbits.load;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
-import static com.runemate.game.api.script.Execution.delay;
 import static java.util.Optional.ofNullable;
 
 public abstract class AbstractNightmareZoneScript {
-    private static final String ABSORPTION = "Absorption ";
-    private static final String DWARVEN_ROCK_CAKE = "Dwarven rock cake";
     protected BotLogger log;
 
     protected ThresholdContainer hpThresholdContainer;
@@ -70,18 +62,6 @@ public abstract class AbstractNightmareZoneScript {
         return validate() && doAdditionalValidations() && run();
     }
 
-    protected boolean validateRockCake() {
-        if (getDwarvenRockCake().isEmpty()) {
-            throw new IllegalStateException("Player does not have a rock cake!");
-        }
-
-        if (getDwarvenRockCake().get(0).getIndex() < 24) {
-            throw new IllegalStateException("Dwarven rock cake must in the last row in inventory");
-        }
-
-        return true;
-    }
-
     protected boolean validateThatArrowsExistWhenWieldingBow() {
         if (getLocal().getWornItems().stream()
                 .noneMatch(item -> item.getName().contains("bow"))) {
@@ -93,56 +73,12 @@ public abstract class AbstractNightmareZoneScript {
                         .anyMatch(ammo -> item.getDefinition().getName().contains(ammo)));
     }
 
-    protected Optional<Varbit> getAbsorptionPoints() {
-        return ofNullable(load(NamedVarbit.NMZ_ABSORPTION.getId()));
-    }
-
-    protected void drinkAbsorptionPotionsUntilFull() {
-        while (!getAbsorptionPoints().isPresent() ||
-                (isAbsorptionPointsUnderMax(getAbsorptionPoints().get()) && !getAbsorptionPotions()
-                        .isEmpty())) {
-            drinkAbsorptionPotion();
-        }
-    }
-
-    protected void guzzleRockCakeUntilHpIs(int i) {
-        while (Health.getCurrent() != i) {
-            guzzleRockCake();
-        }
-    }
-
-    private void drinkAbsorptionPotion() {
-        getAbsorptionPotions().get(0).click();
-        delay(Random.nextInt(190, 330));
-    }
-
-    protected boolean isAbsorptionPointsUnder(Varbit varbit, int i) {
-        return varbit.getValue() < i;
-    }
-
     private boolean isPlayerInADream(Player player) {
         return player.getPosition().getHeight() == -240;
     }
 
-    private void guzzleRockCake() throws IllegalStateException {
-        getDwarvenRockCake().get(0).interact("Guzzle");
-        delay(Random.nextInt(190, 330) / 3);
-    }
-
-    private SpriteItemQueryResults getDwarvenRockCake() {
-        return Inventory.getItems(DWARVEN_ROCK_CAKE);
-    }
-
     protected boolean isHpGreaterThan(int i) {
         return Health.getCurrent() >= i;
-    }
-
-    private boolean isAbsorptionPointsUnderMax(Varbit absorptionPoints) {
-        return isAbsorptionPointsUnder(absorptionPoints, 951);
-    }
-
-    protected SpriteItemQueryResults getAbsorptionPotions() {
-        return getPotions(ABSORPTION);
     }
 
 
