@@ -9,6 +9,7 @@ import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 import static com.runemate.game.api.hybrid.local.Varbits.load;
 import static com.runemate.game.api.script.Execution.delay;
@@ -77,7 +78,7 @@ public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
         return Inventory.getItems(DWARVEN_ROCK_CAKE);
     }
 
-    private void guzzleRockCake() throws IllegalStateException {
+    protected void guzzleRockCake() throws IllegalStateException {
         getDwarvenRockCake().get(0).interact("Guzzle");
         delay(Random.nextInt(190, 330) / 3);
     }
@@ -100,10 +101,14 @@ public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
         }
     }
 
-    protected void guzzleRockCakeUntilHpIs(int i) {
-        while (Health.getCurrent() != i) {
+    protected void guzzleRockCakeUntilHpIs(int i, BooleanSupplier additionalValidations) {
+        while (Health.getCurrent() != i && additionalValidations.getAsBoolean()) {
             guzzleRockCake();
         }
+    }
+
+    protected void guzzleRockCakeUntilHpIs(int i) {
+        guzzleRockCakeUntilHpIs(i, () -> true);
     }
 
     private boolean isAbsorptionPointsUnderMax(Varbit absorptionPoints) {

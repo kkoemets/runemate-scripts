@@ -2,7 +2,6 @@ package com.kkoemets.scripts.nightmarezone.scripts;
 
 import com.kkoemets.api.nightmarezone.threshold.GenericThresholdContainerImpl;
 import com.kkoemets.api.nightmarezone.threshold.ThresholdContainer;
-import com.kkoemets.scripts.nightmarezone.scripts.presets.AbstractNightmareZoneScript;
 import com.kkoemets.scripts.nightmarezone.scripts.presets.*;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 

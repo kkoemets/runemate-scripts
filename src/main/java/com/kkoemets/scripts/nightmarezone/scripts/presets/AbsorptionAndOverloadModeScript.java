@@ -78,4 +78,9 @@ public abstract class AbsorptionAndOverloadModeScript extends AbsorptionModeScri
                 .orElse(true);
     }
 
+    @Override
+    protected void guzzleRockCakeUntilHpIs(int i) {
+        guzzleRockCakeUntilHpIs(1, () -> getOverloadPotions().isEmpty() || !hasOverloadPotionEnded());
+    }
+
 }
