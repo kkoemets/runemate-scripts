@@ -28,6 +28,12 @@ public abstract class AbstractNightmareZoneScript {
 
     }
 
+    abstract boolean doAdditionalValidations();
+
+    abstract boolean run();
+
+    public abstract ScriptName getScriptName();
+
     protected boolean validate() {
         Optional<Player> player = ofNullable(getLocal());
         if (!player.isPresent()) {
@@ -46,12 +52,6 @@ public abstract class AbstractNightmareZoneScript {
 
         return true;
     }
-
-    abstract boolean doAdditionalValidations();
-
-    abstract boolean run();
-
-    public abstract ScriptName getScriptName();
 
     public boolean execute() {
         return validate() && doAdditionalValidations() && run();
