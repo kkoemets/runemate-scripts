@@ -2,24 +2,29 @@ package com.kkoemets.scripts.nightmarezone;
 
 import com.kkoemets.scripts.nightmarezone.scripts.presets.AbstractNightmareZoneScript;
 import com.runemate.game.api.script.framework.LoopingBot;
+import com.runemate.game.api.script.framework.listeners.InventoryListener;
 import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
 import com.runemate.game.api.script.framework.listeners.SkillListener;
+import com.runemate.game.api.script.framework.listeners.events.ItemEvent;
 import com.runemate.game.api.script.framework.listeners.events.MoneyPouchEvent;
 import com.runemate.game.api.script.framework.listeners.events.SkillEvent;
 import com.runemate.game.api.script.framework.logger.BotLogger;
 import javafx.application.Platform;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 import static com.kkoemets.playersense.CustomPlayerSense.Key.ACTIVENESS_FACTOR_WHILE_WAITING;
 import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.kkoemets.scripts.nightmarezone.scripts.NightmareZoneScriptFactory.getAll;
 
-public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener, SkillListener {
+public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener, SkillListener,
+        InventoryListener {
 
     private String aSetting;
     private BotLogger log;
     private List<AbstractNightmareZoneScript> allScripts;
+    @Nullable
     private AbstractNightmareZoneScript currentScript = null;
 
     // Required to tell the client that the bot is EmbeddableUI compatible. Remember, that a bot's main class must have a public no-args constructor, which every Object has by default.
@@ -50,6 +55,20 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener,
     @Override
     public void onExperienceGained(SkillEvent event) {
 
+    }
+
+    @Override
+    public void onItemAdded(ItemEvent event) {
+        if (currentScript == null) {
+            return;
+        }
+    }
+
+    @Override
+    public void onItemRemoved(ItemEvent event) {
+        if (currentScript == null) {
+            return;
+        }
     }
 
     @Override

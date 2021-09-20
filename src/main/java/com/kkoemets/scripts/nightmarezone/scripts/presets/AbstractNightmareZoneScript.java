@@ -1,8 +1,7 @@
 package com.kkoemets.scripts.nightmarezone.scripts.presets;
 
-import com.kkoemets.api.nightmarezone.threshold.GenericThresholdContainerImpl;
-import com.kkoemets.api.nightmarezone.threshold.ThresholdContainer;
 import com.runemate.game.api.hybrid.entities.Player;
+import com.runemate.game.api.hybrid.local.Varbit;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Health;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
@@ -12,25 +11,21 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static com.runemate.game.api.hybrid.local.Varbits.load;
 import static com.runemate.game.api.hybrid.local.hud.interfaces.Inventory.getItems;
 import static com.runemate.game.api.hybrid.region.Players.getLocal;
+import static com.runemate.game.api.script.Execution.delayWhile;
 import static java.util.Optional.ofNullable;
 
 public abstract class AbstractNightmareZoneScript {
+    protected static final String OVERLOAD = "Overload ";
+    protected static final String SUPER_RESTORE = "Super restore";
+    protected static final String RANGING_POTION = "Ranging potion";
     protected BotLogger log;
-
-    protected ThresholdContainer hpThresholdContainer;
-    protected ThresholdContainer absorptionPointsThreshold;
-    protected ThresholdContainer prayerThresholdContainer;
-    protected ThresholdContainer rangeBuffThresholdContainer;
 
     protected AbstractNightmareZoneScript(BotLogger log) {
         this.log = log;
 
-        hpThresholdContainer = new GenericThresholdContainerImpl(2, 4);
-        absorptionPointsThreshold = new GenericThresholdContainerImpl(769, 821);
-        rangeBuffThresholdContainer = new GenericThresholdContainerImpl(5, 8);
-        prayerThresholdContainer = new GenericThresholdContainerImpl(9, 26);
     }
 
     protected boolean validate() {
@@ -90,6 +85,31 @@ public abstract class AbstractNightmareZoneScript {
         return IntStream.rangeClosed(1, 4)
                 .mapToObj(i -> potionName + "(" + i + ")")
                 .toArray(String[]::new);
+    }
+
+    protected void drinkOverloadDose() {
+        if (getOverloadTime().isPresent() && !hasOverloadPotionEnded()) {
+            return;
+        }
+        getOverloadPotions().sortByIndex().get(0).click();
+        delayWhile(() -> !getOverloadTime().isPresent() || getOverloadTime().get().getValue() != 20,
+                3533, 5345);
+        drinkOverloadDose();
+    }
+
+    protected Optional<Varbit> getOverloadTime() {
+        int overloadVarBit = 3955;
+        return ofNullable(load(overloadVarBit));
+    }
+
+    protected boolean hasOverloadPotionEnded() {
+        return getOverloadTime()
+                .map(time -> time.getValue() == 0)
+                .orElse(true);
+    }
+
+    protected SpriteItemQueryResults getOverloadPotions() {
+        return getPotions(OVERLOAD);
     }
 
 }

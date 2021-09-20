@@ -1,5 +1,7 @@
 package com.kkoemets.scripts.nightmarezone.scripts.presets;
 
+import com.kkoemets.api.nightmarezone.threshold.GenericThresholdContainerImpl;
+import com.kkoemets.api.nightmarezone.threshold.ThresholdContainer;
 import com.kkoemets.scripts.varbitlogger.NamedVarbit;
 import com.runemate.game.api.hybrid.local.Varbit;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Health;
@@ -19,6 +21,10 @@ import static java.util.Optional.ofNullable;
 public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
     private static final String DWARVEN_ROCK_CAKE = "Dwarven rock cake";
     private static final String ABSORPTION = "Absorption ";
+    private final ThresholdContainer absorptionPointsThreshold =
+            new GenericThresholdContainerImpl(769, 821);
+    private final ThresholdContainer hpThresholdContainer = new GenericThresholdContainerImpl(2, 4);
+
 
     protected AbsorptionModeScript(BotLogger log) {
         super(log);
