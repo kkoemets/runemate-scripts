@@ -85,6 +85,7 @@ public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
     }
 
     protected void guzzleRockCake() throws IllegalStateException {
+        log.info("Guzzling rock cake");
         getDwarvenRockCake().get(0).interact("Guzzle");
         delay(Random.nextInt(190, 330) / 3);
     }
