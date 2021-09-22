@@ -88,6 +88,10 @@ public abstract class AbstractNightmareZoneScript {
     }
 
     protected void drinkOverloadDose() {
+        if (!validate()) {
+            return;
+        }
+
         if (getOverloadTime().isPresent() && !hasOverloadPotionEnded()) {
             return;
         }
