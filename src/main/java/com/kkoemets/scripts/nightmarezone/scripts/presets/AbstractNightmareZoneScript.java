@@ -45,6 +45,7 @@ public abstract class AbstractNightmareZoneScript {
 
 
         if (!isPlayerInADream(player.get())) {
+            log.warn("Not in a dream");
             throw new IllegalStateException("Player is not in a dream!");
         }
 
@@ -71,7 +72,13 @@ public abstract class AbstractNightmareZoneScript {
     }
 
     private boolean isPlayerInADream(Player player) {
-        return player.getPosition().getHeight() == -240;
+        int height = player.getPosition().getHeight();
+        if (height == -240) {
+            return true;
+        }
+
+        log.warn(String.format("Player's height is-%d", height));
+        return false;
     }
 
     protected boolean isHpGreaterThan(int i) {

@@ -77,7 +77,13 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener,
         if (currentScript == null) {
             return;
         }
-        currentScript.validate();
+        try {
+            currentScript.validate();
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            currentScript = null;
+            pause();
+        }
     }
 
     @Override
@@ -85,6 +91,7 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener,
         if (currentScript == null) {
             pause();
         } else {
+            log.debug("Exec");
             currentScript.execute();
         }
 
@@ -94,10 +101,6 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener,
 
     public List<AbstractNightmareZoneScript> getAllScripts() {
         return allScripts;
-    }
-
-    public AbstractNightmareZoneScript getCurrentScript() {
-        return currentScript;
     }
 
     public void setCurrentScript(AbstractNightmareZoneScript currentScript) {
