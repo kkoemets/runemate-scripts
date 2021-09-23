@@ -15,6 +15,7 @@ import java.util.function.BooleanSupplier;
 
 import static com.runemate.game.api.hybrid.local.Varbits.load;
 import static com.runemate.game.api.script.Execution.delay;
+import static java.lang.String.format;
 import static java.math.BigInteger.ONE;
 import static java.util.Optional.ofNullable;
 
@@ -31,17 +32,17 @@ public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
     }
 
     @Override
-    public boolean doAdditionalValidations() {
-        return validateRockCake();
+    public void doAdditionalValidations() {
+        validateRockCake();
     }
 
     @Override
     public boolean execute() {
-        return validate() && doAdditionalValidations() && run();
+        return run();
     }
 
     @Override
-    boolean run() {
+    protected boolean run() {
         if (!isHpGreaterThan(hpThresholdContainer.getThreshold())) {
             return true;
         }
@@ -68,7 +69,7 @@ public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
         return true;
     }
 
-    private boolean validateRockCake() {
+    private void validateRockCake() {
         if (getDwarvenRockCake().isEmpty()) {
             throw new IllegalStateException("Player does not have a rock cake!");
         }
@@ -77,7 +78,6 @@ public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
             throw new IllegalStateException("Dwarven rock cake must in the last row in inventory");
         }
 
-        return true;
     }
 
     private SpriteItemQueryResults getDwarvenRockCake() {
@@ -95,6 +95,7 @@ public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
     }
 
     private void drinkAbsorptionPotion() {
+        log.info("Drinking absorption");
         getAbsorptionPotions().get(0).click();
         delay(Random.nextInt(190, 330));
     }
@@ -103,12 +104,13 @@ public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
     protected void drinkAbsorptionPotionsUntilFull() {
         while (!getAbsorptionPoints().isPresent() ||
                 (isAbsorptionPointsUnderMax(getAbsorptionPoints().get()) && !getAbsorptionPotions()
-                        .isEmpty()) && validate()) {
+                        .isEmpty())) {
             drinkAbsorptionPotion();
         }
     }
 
     protected void guzzleRockCakeUntilHpIs(int i, BooleanSupplier additionalValidations) {
+        log.info(format("Guzzling hp to %d", i));
         while (Health.getCurrent() != i && additionalValidations.getAsBoolean()) {
             guzzleRockCake();
         }

@@ -28,17 +28,15 @@ public abstract class AbstractNightmareZoneScript {
 
     }
 
-    abstract boolean doAdditionalValidations();
-
-    abstract boolean run();
+    protected abstract boolean run();
 
     public abstract ScriptName getScriptName();
 
-    protected boolean validate() {
+    public void validate() {
         Optional<Player> player = ofNullable(getLocal());
         if (!player.isPresent()) {
             log.info("Player is not visible yet, waiting...");
-            return false;
+            return;
         }
 
         if (!validateThatArrowsExistWhenWieldingBow()) {
@@ -50,11 +48,15 @@ public abstract class AbstractNightmareZoneScript {
             throw new IllegalStateException("Player is not in a dream!");
         }
 
-        return true;
+
+        doAdditionalValidations();
+    }
+
+    protected void doAdditionalValidations() {
     }
 
     public boolean execute() {
-        return validate() && doAdditionalValidations() && run();
+        return run();
     }
 
     protected boolean validateThatArrowsExistWhenWieldingBow() {
@@ -88,10 +90,6 @@ public abstract class AbstractNightmareZoneScript {
     }
 
     protected void drinkOverloadDose() {
-        if (!validate()) {
-            return;
-        }
-
         if (getOverloadTime().isPresent() && !hasOverloadPotionEnded()) {
             return;
         }

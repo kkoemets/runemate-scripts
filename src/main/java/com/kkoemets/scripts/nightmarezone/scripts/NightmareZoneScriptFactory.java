@@ -40,8 +40,8 @@ public final class NightmareZoneScriptFactory {
             }
 
             @Override
-            public boolean doAdditionalValidations() {
-                super.doAdditionalValidations();
+            protected boolean run() {
+                super.run();
 
                 if (!hasOverloadPotionEnded() && isHpGreaterThan(localHpThreshold.getThreshold())) {
                     guzzleRockCakeUntilHpIs(1);
@@ -58,11 +58,6 @@ public final class NightmareZoneScriptFactory {
             @Override
             public ScriptName getScriptName() {
                 return ABSORPTION_AND_OVERLOAD_MODE_SCRIPT;
-            }
-
-            @Override
-            public boolean doAdditionalValidations() {
-                return super.doAdditionalValidations();
             }
         };
     }

@@ -2,6 +2,7 @@ package com.kkoemets.scripts.nightmarezone;
 
 import com.kkoemets.scripts.nightmarezone.scripts.presets.AbstractNightmareZoneScript;
 import com.runemate.game.api.script.framework.LoopingBot;
+import com.runemate.game.api.script.framework.listeners.EngineListener;
 import com.runemate.game.api.script.framework.listeners.InventoryListener;
 import com.runemate.game.api.script.framework.listeners.MoneyPouchListener;
 import com.runemate.game.api.script.framework.listeners.SkillListener;
@@ -19,7 +20,7 @@ import static com.kkoemets.playersense.CustomPlayerSense.initializeKeys;
 import static com.kkoemets.scripts.nightmarezone.scripts.NightmareZoneScriptFactory.getAll;
 
 public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener, SkillListener,
-        InventoryListener {
+        InventoryListener, EngineListener {
 
     private String aSetting;
     private BotLogger log;
@@ -69,6 +70,14 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener,
         if (currentScript == null) {
             return;
         }
+    }
+
+    @Override
+    public void onTickStart() {
+        if (currentScript == null) {
+            return;
+        }
+        currentScript.validate();
     }
 
     @Override
