@@ -40,8 +40,8 @@ public final class NightmareZoneScriptFactory {
             }
 
             @Override
-            protected boolean run() {
-                super.run();
+            public boolean execute() {
+                super.execute();
 
                 if (!hasOverloadPotionEnded() && isHpGreaterThan(localHpThreshold.getThreshold())) {
                     guzzleRockCakeUntilHpIs(1);

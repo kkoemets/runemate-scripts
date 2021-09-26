@@ -32,17 +32,13 @@ public abstract class AbsorptionModeScript extends AbstractNightmareZoneScript {
     }
 
     @Override
-    public void doAdditionalValidations() {
+    public void validate() {
+        super.validate();
         validateRockCake();
     }
 
     @Override
     public boolean execute() {
-        return run();
-    }
-
-    @Override
-    protected boolean run() {
         if (!isHpGreaterThan(hpThresholdContainer.getThreshold())) {
             return true;
         }

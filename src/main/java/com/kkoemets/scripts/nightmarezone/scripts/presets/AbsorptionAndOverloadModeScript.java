@@ -10,9 +10,9 @@ public abstract class AbsorptionAndOverloadModeScript extends AbsorptionModeScri
     }
 
     @Override
-    protected boolean run() {
+    public boolean execute() {
         if (getOverloadPotions().isEmpty()) {
-            return super.run();
+            return super.execute();
         }
 
         if (getOverloadTime().isPresent() && !hasOverloadPotionEnded()) {

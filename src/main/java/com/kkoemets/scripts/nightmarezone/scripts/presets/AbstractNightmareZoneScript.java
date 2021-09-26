@@ -28,8 +28,6 @@ public abstract class AbstractNightmareZoneScript {
 
     }
 
-    protected abstract boolean run();
-
     public abstract ScriptName getScriptName();
 
     public void validate() {
@@ -48,17 +46,9 @@ public abstract class AbstractNightmareZoneScript {
             log.warn("Not in a dream");
             throw new IllegalStateException("Player is not in a dream!");
         }
-
-
-        doAdditionalValidations();
     }
 
-    protected void doAdditionalValidations() {
-    }
-
-    public boolean execute() {
-        return run();
-    }
+    public abstract boolean execute();
 
     protected boolean validateThatArrowsExistWhenWieldingBow() {
         if (getLocal().getWornItems().stream()

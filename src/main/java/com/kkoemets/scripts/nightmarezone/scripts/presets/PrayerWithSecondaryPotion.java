@@ -28,7 +28,8 @@ public abstract class PrayerWithSecondaryPotion extends AbstractNightmareZoneScr
     protected abstract boolean drinkSecondaryPotionWithValidations(SpriteItemQueryResults rangePotions);
 
     @Override
-    protected void doAdditionalValidations() {
+    public void validate() {
+        super.validate();
         if (Stream.of(getPrayerRestoringPotions(), getSecondaryPotions())
                 .allMatch(QueryResults::isEmpty)) {
             throw new IllegalStateException(format("No %s and %s",
@@ -37,7 +38,7 @@ public abstract class PrayerWithSecondaryPotion extends AbstractNightmareZoneScr
     }
 
     @Override
-    protected boolean run() {
+    public boolean execute() {
         log.info(getSecondaryPotionName() + " amount: " + getSecondaryPotions().size());
         if (getPrayerRestoringPotions().isEmpty()) {
             throw new RuntimeException("No more " + getPrayerRestoringPotionName());
