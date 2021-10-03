@@ -71,6 +71,10 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener,
 
     @Override
     public void onExperienceGained(SkillEvent event) {
+        if (currentScript == null) {
+            return;
+        }
+
         if (event.getType() != SkillEvent.Type.EXPERIENCE_GAINED) {
             return;
         }
