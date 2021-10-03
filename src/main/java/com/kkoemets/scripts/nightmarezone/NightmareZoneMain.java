@@ -27,6 +27,12 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener,
     private List<AbstractNightmareZoneScript> allScripts;
     @Nullable
     private AbstractNightmareZoneScript currentScript = null;
+    private Runnable onStop = () -> {
+    };
+    private Runnable onPause = () -> {
+    };
+    private Runnable onResume = () -> {
+    };
 
     // Required to tell the client that the bot is EmbeddableUI compatible. Remember, that a bot's main class must have a public no-args constructor, which every Object has by default.
     public NightmareZoneMain() {
@@ -98,6 +104,20 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener,
         log.info("The end");
     }
 
+    @Override
+    public void onStop() {
+        Platform.runLater(() -> onStop.run());
+    }
+
+    @Override
+    public void onPause() {
+        Platform.runLater(() -> onPause.run());
+    }
+
+    @Override
+    public void onResume() {
+        Platform.runLater(() -> onResume.run());
+    }
 
     public List<AbstractNightmareZoneScript> getAllScripts() {
         return allScripts;
@@ -105,6 +125,18 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener,
 
     public void setCurrentScript(AbstractNightmareZoneScript currentScript) {
         this.currentScript = currentScript;
+    }
+
+    public void setOnStop(Runnable onStop) {
+        this.onStop = onStop;
+    }
+
+    public void setOnPause(Runnable onPause) {
+        this.onPause = onPause;
+    }
+
+    public void setOnResume(Runnable onResume) {
+        this.onResume = onResume;
     }
 
 }

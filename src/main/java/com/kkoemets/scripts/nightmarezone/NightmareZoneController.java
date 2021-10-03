@@ -35,6 +35,10 @@ public class NightmareZoneController implements Initializable {
 
         toggleBtn.setText("Turn on");
         toggleBtn.setOnAction(event -> onToggle());
+
+        main.setOnStop(stage::close);
+        main.setOnPause(() -> toggleBtn.setText("Turn on"));
+        main.setOnResume(() -> toggleBtn.setText("Turn off"));
     }
 
     private void onToggle() {
@@ -50,8 +54,6 @@ public class NightmareZoneController implements Initializable {
         System.out.printf("Selected script: %s%n", selectedScript.getScriptName());
 
         toggleScriptState();
-
-        toggleBtn.setText(main.isPaused() ? "Turn on" : "Turn off");
     }
 
     private void toggleScriptState() {
