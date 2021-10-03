@@ -142,6 +142,10 @@ public final class NightmareZoneScriptFactory {
             @Override
             protected boolean drinkSecondaryPotionWithValidations(
                     SpriteItemQueryResults rangePotions) {
+                if (getOverloadPotions().isEmpty()) {
+                    return true;
+                }
+
                 drinkOverloadDose();
                 return true;
             }
