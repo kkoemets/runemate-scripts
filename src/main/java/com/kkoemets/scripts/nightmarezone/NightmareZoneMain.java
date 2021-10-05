@@ -72,10 +72,12 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener,
     @Override
     public void onExperienceGained(SkillEvent event) {
         if (currentScript == null) {
+            log.debug("Exp gained, but script is stopped");
             return;
         }
 
         if (event.getType() != SkillEvent.Type.EXPERIENCE_GAINED) {
+            log.debug("You've gained a level, grats");
             return;
         }
 
@@ -116,19 +118,30 @@ public class NightmareZoneMain extends LoopingBot implements MoneyPouchListener,
 
     @Override
     public void onStop() {
+        log.debug("Stopping script");
         Platform.runLater(() -> onStop.run());
     }
 
     @Override
     public void onPause() {
+        log.debug("Pausing script");
+
+        log.debug("Clearing skill xp map");
         skillsInitialXp.clear();
+
+        log.debug("Resetting start time");
         startTime = null;
+
         Platform.runLater(() -> onPause.run());
     }
 
     @Override
     public void onResume() {
+        log.debug("Resuming script");
+
+        log.debug("Setting start time");
         startTime = currentTimeMillis();
+
         Platform.runLater(() -> onResume.run());
     }
 
